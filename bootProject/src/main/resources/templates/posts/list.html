@@ -1,0 +1,59 @@
+<!doctype html>
+<html lang="ko" xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      xmlns:th="http://www.thymeleaf.org"
+      layout:decorate="~{layout/base.html}">
+<body>
+<div layout:fragment="content" class="container">
+    <h1 class="mb-4">게시글 목록</h1>
+
+    <!-- 카드 형태 게시글 목록 -->
+    <div class="row row-cols-1 row-cols-md-4 g-4">
+        <!-- 게시글이 없는 경우 -->
+        <div class="col text-center" th:if="${posts.empty}">
+            <p>게시글이 없습니다.</p>
+        </div>
+
+        <!-- 게시글 목록 출력 -->
+        <div class="col" th:each="post : ${posts}">
+            <div class="card h-100 shadow-sm" style="max-width: 18rem;">
+                <img th:src="@{/img/image.svg}" class="card-img-top" alt="게시글 이미지" style="height: 180px; object-fit: cover;">
+                <div class="card-body">
+                    <h5 class="card-title" th:text="${post.title}">게시글 제목</h5>
+                    <p class="card-text">서울 · <span th:text="${post.category}">카테고리</span></p>
+                    <p class="card-text text-muted" th:text="${post.createdAt}">작성일</p>
+                </div>
+                <div class="card-footer text-center">
+                    <!-- 유저 테이블 준비 완료 시 아래 주석 해제 -->
+                    <!-- <small class="text-muted" th:text="${post.user != null ? post.user.username : '익명'}"></small> -->
+                    <small class="text-muted">익명</small>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- 기존 테이블 형태 목록 -->
+    <table class="table table-striped mt-5">
+        <thead>
+        <tr>
+            <th>번호</th>
+            <th>제목</th>
+            <th>작성자</th>
+        </tr>
+        </thead>
+        <tbody>
+        <!-- 게시글이 없는 경우 -->
+        <tr th:if="${posts.empty}">
+            <td colspan="3">게시글이 없습니다.</td>
+        </tr>
+        <!-- 게시글 목록 출력 -->
+        <tr th:each="post, iterStat : ${posts}">
+            <td th:text="${iterStat.count}"></td>
+            <td th:text="${post.title}"></td>
+            <!-- <td th:text="${post.user != null ? post.user.username : '익명'}"></td> -->
+            <td>익명</td>
+        </tr>
+        </tbody>
+    </table>
+</div>
+</body>
+</html>
