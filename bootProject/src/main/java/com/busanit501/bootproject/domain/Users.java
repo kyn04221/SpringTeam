@@ -9,7 +9,7 @@ import lombok.*;
 @NoArgsConstructor
 @AllArgsConstructor
 @ToString
-public class Users{
+public class Users extends BaseEntity{
 
     @Id
     @Column(length = 50, nullable = false)
