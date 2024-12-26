@@ -37,13 +37,6 @@ public class Post extends BaseEntity{
     @Column(columnDefinition = "TEXT")
     private String content;
 
-    @CreationTimestamp
-    @Column(updatable = false)
-    private LocalDateTime createdAt;
-
-    @UpdateTimestamp
-    private LocalDateTime updatedAt;
-
     // 댓글과의 관계 설정 (게시글 삭제 시 댓글도 삭제), 테스트 할때 빌더 디폴트 넣음 나중에 빼셈
     @OneToMany(mappedBy = "post", cascade = CascadeType.ALL, orphanRemoval = true)
     @Builder.Default
