@@ -17,15 +17,15 @@ import java.util.List;
 @NoArgsConstructor
 @AllArgsConstructor
 
-public class Post {
+public class Post extends BaseEntity{
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long postId;
 
-//    @ManyToOne
-//    @JoinColumn(name = "user_id", nullable = false)
-//    private User user;
+    @ManyToOne
+    @JoinColumn(name = "user_id", nullable = false)
+    private Users user;
 
     @Enumerated(EnumType.STRING)
     @Column(nullable = false)
