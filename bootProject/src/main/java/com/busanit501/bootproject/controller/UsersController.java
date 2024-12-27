@@ -6,17 +6,23 @@ import com.busanit501.bootproject.service.UsersService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.stereotype.Controller;
+import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
-@RestController
-@RequestMapping("/home/users")
+@Controller
+@RequestMapping("/user")
 public class UsersController {
 
     @Autowired
     private UsersService usersService;
 
+    @GetMapping("/login")
+    public String login(Model model) {
+        return "user/login"; // templates/user/login.html로 이동
+    }
 
     @PostMapping
     public ResponseEntity<UsersDTO> createUser(@RequestBody UsersDTO usersDTO) {
