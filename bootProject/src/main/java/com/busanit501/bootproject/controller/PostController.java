@@ -48,4 +48,18 @@ public class PostController {
         model.addAttribute("totalPages", hospitalPosts.getTotalPages());
         return "posts/hospital";
     }
+
+    // 중고장터 카테고리 게시글만 조회
+    @GetMapping("/useditems")
+    public String listUseditemsPosts(Model model,
+                                    @RequestParam(defaultValue = "0") int page,
+                                    @RequestParam(defaultValue = "10") int size) {
+        Pageable pageable = PageRequest.of(page, size);
+        Page<Post> useditemsPosts = postService.getPostsByCategory(Category.UsedItems, pageable);
+
+        model.addAttribute("postsPage", useditemsPosts);
+        model.addAttribute("currentPage", page);
+        model.addAttribute("totalPages", useditemsPosts.getTotalPages());
+        return "posts/useditems";
+    }
 }
