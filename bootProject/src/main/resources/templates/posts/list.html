@@ -4,7 +4,7 @@
       layout:decorate="~{layout/base.html}">
 <body>
 <div layout:fragment="content" class="container">
-    <h1 class="mb-4">게시글 목록</h1>
+    <h2 class="mb-4 text-center">게시글 목록</h2>
 
     <!-- 카드 형태 게시글 목록 -->
     <div class="row row-cols-1 row-cols-md-4 g-4">
@@ -16,7 +16,7 @@
         <!-- 게시글 목록 출력 -->
         <div class="col" th:each="post : ${posts}">
             <div class="card h-100 shadow-sm" style="max-width: 18rem;">
-                <img th:src="${post.imageUrl != null ? post.imageUrl : '/img/default.jpg'}"
+                <img th:src="${post.imageUrl != null ? post.imageUrl : '/img/default.png'}"
                      class="card-img-top" alt="게시글 이미지"
                      style="height: 180px; object-fit: cover;">
                 <div class="card-body">
