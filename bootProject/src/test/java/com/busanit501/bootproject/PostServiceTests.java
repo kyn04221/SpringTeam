@@ -9,6 +9,9 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
@@ -43,13 +46,16 @@ public class PostServiceTests {
     @Test
     @DisplayName("게시글 전체 조회 테스트")
     public void testGetAllPosts() {
+        // Given
+        Pageable pageable = PageRequest.of(0, 10);  // 페이지 번호(0), 페이지 크기(10)
+
         // When
-        List<Post> posts = postService.getAllPosts();
+        Page<Post> postsPage = postService.getAllPosts(pageable);
 
         // Then
-        assertThat(posts).isNotEmpty();
-        assertThat(posts.size()).isGreaterThanOrEqualTo(1);
-        assertThat(posts.get(0).getTitle()).isEqualTo("테스트 게시글");
+        assertThat(postsPage).isNotEmpty();
+        assertThat(postsPage.getContent().size()).isGreaterThanOrEqualTo(1);
+        assertThat(postsPage.getContent().get(0).getTitle()).isEqualTo("테스트 게시글");
     }
 
     @Test

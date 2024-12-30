@@ -1,13 +1,19 @@
 package com.busanit501.bootproject.service.post;
 
+import com.busanit501.bootproject.domain.Category;
 import com.busanit501.bootproject.domain.Post;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+import org.springframework.stereotype.Service;
 
-import java.util.List;
-
+@Service
 public interface PostService {
-    List<Post> getAllPosts();  // 모든 게시글 조회
-    Post createPost(Post post); // 게시글 작성
-    Post getPostById(Long id);  // 특정 게시글 조회
-    void deletePost(Long id);   // 게시글 삭제
-    Post updatePost(Long id, Post post);  // 게시글 수정 (추가)
+    Page<Post> getAllPosts(Pageable pageable);
+    Post createPost(Post post);
+    Post getPostById(Long id);
+    void deletePost(Long id);
+    Post updatePost(Long id, Post post);
+
+    // Enum 타입으로 카테고리 조회
+    Page<Post> getPostsByCategory(Category category, Pageable pageable);
 }

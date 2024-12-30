@@ -2,7 +2,9 @@ package com.busanit501.bootproject;
 
 import com.busanit501.bootproject.domain.Category;
 import com.busanit501.bootproject.domain.Post;
+import com.busanit501.bootproject.domain.Users;
 import com.busanit501.bootproject.repository.PostRepository;
+import com.busanit501.bootproject.repository.UsersRepository;
 import lombok.Builder;
 import lombok.extern.slf4j.Slf4j;
 import org.junit.jupiter.api.Test;
@@ -24,18 +26,27 @@ public class PostRepositoryTests {
     @Autowired
     private PostRepository postRepository;
 
+    @Autowired
+    private UsersRepository usersRepository;
+
     @Test
     public void testInsertPosts() {
-        IntStream.rangeClosed(1, 50).forEach(i -> {
+        // 기본 사용자 조회 (예: user_id = 1)
+        Users user = usersRepository.findById(1L)
+                .orElseThrow(() -> new IllegalStateException("User not found"));
+
+        IntStream.rangeClosed(1, 5).forEach(i -> {
             Post post = Post.builder()
                     .title("테스트 게시글 " + i)
                     .content("테스트 내용입니다. " + i)
-                    .category(Category.valueOf("FreeBoard"))
+                    .category(Category.EmergencyHospital)
+                    .user(user)  // Users 객체 설정
                     .build();
             postRepository.save(post);
         });
         log.info("50개의 게시글이 저장되었습니다.");
     }
+
 
     @Test
     public void testSelectOne() {
