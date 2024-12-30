@@ -3,56 +3,46 @@
       xmlns:th="http://www.thymeleaf.org"
       layout:decorate="~{layout/base.html}">
 <body>
-<div layout:fragment="content" class="container">
-    <h2 class="mb-4 text-center">게시글 목록</h2>
+<div layout:fragment="content" class="container mt-5">
+    <h2 class="mb-5 text-center">커뮤니티</h2>
 
-    <!-- 카드 형태 게시글 목록 -->
-    <div class="row row-cols-1 row-cols-md-4 g-4">
-        <!-- 게시글이 없는 경우 -->
-        <div class="col text-center" th:if="${posts.empty}">
-            <p>게시글이 없습니다.</p>
+    <div class="list-group">
+        <div class="list-group-item text-center py-4" th:if="${postsPage.empty}">
+            게시글이 없습니다.
         </div>
-
-        <!-- 게시글 목록 출력 -->
-        <div class="col" th:each="post : ${posts}">
-            <div class="card h-100 shadow-sm" style="max-width: 18rem;">
-                <img th:src="${post.imageUrl != null ? post.imageUrl : '/img/default.png'}"
-                     class="card-img-top" alt="게시글 이미지"
-                     style="height: 180px; object-fit: cover;">
-                <div class="card-body">
-                    <h5 class="card-title" th:text="${post.title}">게시글 제목</h5>
-                    <p class="card-text">서울 · <span th:text="${post.category}">카테고리</span></p>
-                    <p class="card-text text-muted" th:text="${post.created_at}">작성일</p>
+        <div class="list-group-item d-flex justify-content-between align-items-center py-3"
+             th:each="post, iterStat : ${postsPage.content}">
+            <div class="d-flex">
+                <span class="text-muted me-3" th:text="${iterStat.count + 1}">1</span>
+                <div>
+                    <div>
+                        <strong th:text="'[' + ${post.category} + '] ' + ${post.title}">[매칭] 평일 오후 한강공원 산책하실 분...</strong>
+                    </div>
+                    <div class="text-muted small" th:text="${post.content}">매칭이 수락되었습니다.</div>
                 </div>
-                <div class="card-footer text-center">
-                    <small class="text-muted" th:text="${post.user != null ? post.user.name : '익명'}"></small>
-                </div>
+            </div>
+            <div class="text-end text-muted small d-flex align-items-center">
+                <span class="me-3">서울 | 압구정동</span>
+                <span>방금</span>
             </div>
         </div>
     </div>
 
-<!--    &lt;!&ndash; 기존 테이블 형태 목록 &ndash;&gt;-->
-<!--    <table class="table table-striped mt-5">-->
-<!--        <thead>-->
-<!--        <tr>-->
-<!--            <th>번호</th>-->
-<!--            <th>제목</th>-->
-<!--            <th>작성자</th>-->
-<!--        </tr>-->
-<!--        </thead>-->
-<!--        <tbody>-->
-<!--        &lt;!&ndash; 게시글이 없는 경우 &ndash;&gt;-->
-<!--        <tr th:if="${posts.empty}">-->
-<!--            <td colspan="3">게시글이 없습니다.</td>-->
-<!--        </tr>-->
-<!--        &lt;!&ndash; 게시글 목록 출력 &ndash;&gt;-->
-<!--        <tr th:each="post, iterStat : ${posts}">-->
-<!--            <td th:text="${iterStat.count}"></td>-->
-<!--            <td th:text="${post.title}"></td>-->
-<!--            <td th:text="${post.user != null ? post.user.name : '익명'}"></td>-->
-<!--        </tr>-->
-<!--        </tbody>-->
-<!--    </table>-->
+    <!-- 페이징 -->
+    <nav aria-label="Page navigation" class="mt-4">
+        <ul class="pagination justify-content-center">
+            <li class="page-item" th:classappend="${currentPage == 0} ? 'disabled'">
+                <a class="page-link" th:href="@{/posts/hospital(page=${currentPage - 1})}" tabindex="-1">이전</a>
+            </li>
+            <li class="page-item" th:each="i : ${#numbers.sequence(0, totalPages - 1)}"
+                th:classappend="${i == currentPage} ? 'active'">
+                <a class="page-link" th:href="@{/posts/hospital(page=${i})}" th:text="${i + 1}">1</a>
+            </li>
+            <li class="page-item" th:classappend="${currentPage + 1 == totalPages} ? 'disabled'">
+                <a class="page-link" th:href="@{/posts/hospital(page=${currentPage + 1})}">다음</a>
+            </li>
+        </ul>
+    </nav>
 </div>
 </body>
 </html>

@@ -1,21 +1,24 @@
 package com.busanit501.bootproject.service.post;
 
+import com.busanit501.bootproject.domain.Category;
 import com.busanit501.bootproject.domain.Post;
 import com.busanit501.bootproject.repository.PostRepository;
-import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
-
-import java.util.List;
 
 @Service
 public class PostServiceImpl implements PostService {
 
-    @Autowired
-    private PostRepository postRepository;
+    private final PostRepository postRepository;
+
+    public PostServiceImpl(PostRepository postRepository) {
+        this.postRepository = postRepository;
+    }
 
     @Override
-    public List<Post> getAllPosts() {
-        return postRepository.findAll();
+    public Page<Post> getAllPosts(Pageable pageable) {
+        return postRepository.findAll(pageable);
     }
 
     @Override
@@ -25,8 +28,7 @@ public class PostServiceImpl implements PostService {
 
     @Override
     public Post getPostById(Long id) {
-        return postRepository.findById(id)
-                .orElseThrow(() -> new RuntimeException("Post not found"));
+        return postRepository.findById(id).orElseThrow(() -> new RuntimeException("게시글을 찾을 수 없습니다."));
     }
 
     @Override
@@ -34,18 +36,17 @@ public class PostServiceImpl implements PostService {
         postRepository.deleteById(id);
     }
 
-    // 게시글 수정 로직 추가
     @Override
     public Post updatePost(Long id, Post post) {
-        // 기존 게시글이 존재하는지 확인
-        Post existingPost = postRepository.findById(id)
-                .orElseThrow(() -> new RuntimeException("Post not found"));
-
-        // 기존 게시글에 새로운 데이터 덮어쓰기
+        Post existingPost = getPostById(id);
         existingPost.setTitle(post.getTitle());
         existingPost.setContent(post.getContent());
         existingPost.setCategory(post.getCategory());
-
         return postRepository.save(existingPost);
+    }
+
+    @Override
+    public Page<Post> getPostsByCategory(Category category, Pageable pageable) {
+        return postRepository.findByCategory(category, pageable);
     }
 }
