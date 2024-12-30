@@ -1,0 +1,31 @@
+<!doctype html>
+<html lang="ko" xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      xmlns:th="http://www.thymeleaf.org"
+      layout:decorate="~{layout/base.html}">
+<body>
+<div layout:fragment="content" class="container">
+    <h2 class="mb-4 text-center">중고장터</h2>
+
+    <div class="row row-cols-1 row-cols-md-4 g-4">
+        <!-- 게시글 목록 출력 -->
+        <div class="col" th:each="post : ${postsPage.content}">
+            <div class="card h-100 shadow-sm" style="max-width: 18rem;">
+                <img th:src="${post.imageUrl != null ? post.imageUrl : '/img/default.png'}"
+                     class="card-img-top" alt="게시글 이미지"
+                     style="height: 180px; object-fit: cover;">
+                <div class="card-body">
+                    <h5 class="card-title" th:text="${post.title}">게시글 제목</h5>
+                    <p class="card-text">서울 · <span th:text="${post.category}">카테고리</span></p>
+                    <p class="card-text text-muted" th:text="${post.created_at}">작성일</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- 게시글이 없는 경우 -->
+        <div class="col text-center" th:if="${postsPage.empty}">
+            <p>게시글이 없습니다.</p>
+        </div>
+    </div>
+</div>
+</body>
+</html>
