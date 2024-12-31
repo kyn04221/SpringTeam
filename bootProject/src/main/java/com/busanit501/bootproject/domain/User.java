@@ -4,7 +4,6 @@ import jakarta.persistence.*;
 import lombok.*;
 
 import java.time.LocalDate;
-import java.time.LocalDateTime;
 
 @Entity
 @Getter
@@ -12,7 +11,7 @@ import java.time.LocalDateTime;
 @NoArgsConstructor
 @AllArgsConstructor
 @ToString
-public class Users extends BaseEntity{
+public class User extends BaseEntity{
 
     @Id
     @Column(length = 50, nullable = false)
@@ -37,15 +36,15 @@ public class Users extends BaseEntity{
     @Column(length = 200, nullable = false)
     private String address; // 주소
 
-    @Column(length = 300, nullable = false)
+    @Column(nullable = true) // NULL 허용
     private String profilePicture; // 프로필 사진 URL
 
     @Column(length = 100, nullable = false)
     private String phoneNumber; // 전화번호
 
+    @Column(nullable = false, columnDefinition = "FLOAT DEFAULT 0")
+    private float rating; // 유저의 평균 평점
 
-    public void setPassword(String password) {
-        this.password = password;
-    }
-
+    @Column(nullable = false, columnDefinition = "INT DEFAULT 0")
+    private int ratingCount; // 리뷰 수
 }
