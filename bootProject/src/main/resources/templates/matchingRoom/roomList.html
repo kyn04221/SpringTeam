@@ -9,6 +9,22 @@
         <!-- Left Section: Chat Room List -->
         <div style="width: 50%; padding: 10px; border-right: 1px solid #ccc; overflow-y: auto;">
             <h2>채팅방 목록</h2>
+
+            <!-- 채팅방 검색 추가 -->
+            <div style="margin-bottom: 20px;">
+                <form action="/matchingRoom/roomList" method="get">
+                    <!-- 검색 키워드 입력 -->
+                    <div style="margin-bottom: 10px;">
+                        <input type="text" name="keyword" placeholder="채팅방 제목으로 검색..." style="width: 100%; padding: 8px;" th:value="${keyword}">
+                    </div>
+
+                    <!-- 검색 및 초기화 버튼 -->
+                    <div>
+                        <button type="submit" style="padding: 8px 15px;">검색</button>
+                    </div>
+                </form>
+            </div>
+
             <ul style="list-style-type: none; padding-left: 0;">
                 <li th:each="room : ${roomList}" style="border-bottom: 1px solid #eee; padding: 10px;">
                     <div>

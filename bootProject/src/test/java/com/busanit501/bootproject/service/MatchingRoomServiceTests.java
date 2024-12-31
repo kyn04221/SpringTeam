@@ -1,7 +1,9 @@
 package com.busanit501.bootproject.service;
 
+import com.busanit501.bootproject.domain.RoomParticipantsStatus;
 import com.busanit501.bootproject.domain.RoomStatus;
 import com.busanit501.bootproject.dto.MatchingRoomDTO;
+import com.busanit501.bootproject.dto.RoomParticipantsDTO;
 import lombok.extern.log4j.Log4j2;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -28,7 +30,12 @@ public class MatchingRoomServiceTests {
                 .status(RoomStatus.Open)
                 .build();
 
-        int roomId = matchingRoomService.addMatchingRoom(matchingRoomDTO);
+        RoomParticipantsDTO roomParticipantsDTO = RoomParticipantsDTO.builder()
+                .senderId(1) // hostId로 설정
+                .status(RoomParticipantsStatus.Pending)
+                .build();
+
+        int roomId = matchingRoomService.addMatchingRoom(matchingRoomDTO, roomParticipantsDTO);
         log.info("새로운 매칭방 ID: " + roomId);
     }
 
@@ -60,7 +67,8 @@ public class MatchingRoomServiceTests {
     @Test
     public void testSearchAllMatchingRooms() {
         String keyword = "매칭"; // 검색 키워드
-        var matchingRooms = matchingRoomService.searchAllMatchingRoom(keyword);
+        int userId = 1;
+        var matchingRooms = matchingRoomService.searchAllMatchingRoom(keyword,userId);
 
         matchingRooms.forEach(room -> {
             log.info("Room ID: " + room.getRoomId());

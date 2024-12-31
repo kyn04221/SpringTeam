@@ -8,6 +8,7 @@ import java.sql.Timestamp;
 @Entity
 @Table(name = "Message")
 @Getter
+@Setter
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor
@@ -33,4 +34,8 @@ public class Message extends BaseEntity{
 
     @Column(nullable = false, columnDefinition = "BOOLEAN DEFAULT FALSE")
     private boolean isRead;
+
+    public void MessageUpdate(String content) {
+        this.content = content;
+    }
 }

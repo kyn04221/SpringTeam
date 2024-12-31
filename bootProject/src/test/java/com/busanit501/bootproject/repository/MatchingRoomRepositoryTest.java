@@ -23,7 +23,7 @@ public class MatchingRoomRepositoryTest {
     @Test
     @Transactional
     public void searchAllMatchingRoomTest() {
-        List<MatchingRoom> matchingRooms = matchingRoomRepository.searchAllMatchingRoom("");
+        List<MatchingRoom> matchingRooms = matchingRoomRepository.searchAllMatchingRoom("",1);
         log.info(matchingRooms);
     }
 

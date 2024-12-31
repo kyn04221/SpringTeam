@@ -10,6 +10,7 @@ import java.sql.Timestamp;
 @Entity
 @Table(name = "RoomParticipants")
 @Getter
+@Setter
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor
@@ -21,7 +22,6 @@ public class RoomParticipants extends BaseEntity{
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "chatRoomId")
-    @OnDelete(action = OnDeleteAction.CASCADE)
     private MatchingRoom chatRoom;
 
     @ManyToOne(fetch = FetchType.LAZY)

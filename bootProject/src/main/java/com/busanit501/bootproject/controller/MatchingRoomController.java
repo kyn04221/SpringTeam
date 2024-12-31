@@ -21,8 +21,11 @@ public class MatchingRoomController {
     // 매칭룸 리스트 조회
     @GetMapping("/roomList")
     public String roomList(@RequestParam(required = false, defaultValue = "") String keyword, Model model) {
+        //유저 번호
+        int userId = 1;
+
         // 키워드에 맞는 매칭룸 리스트를 검색
-        List<MatchingRoomDTO> roomList = matchingRoomService.searchAllMatchingRoom(keyword);
+        List<MatchingRoomDTO> roomList = matchingRoomService.searchAllMatchingRoom(keyword,userId);
 
         // 검색된 매칭룸 리스트를 모델에 추가
         model.addAttribute("roomList", roomList);
