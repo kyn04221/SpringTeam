@@ -1,73 +1,58 @@
 package com.busanit501.bootproject.controller;
 
-
-import com.busanit501.bootproject.dto.UsersDTO;
+import com.busanit501.bootproject.domain.Users;
 import com.busanit501.bootproject.service.UsersService;
+import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
-import org.springframework.web.bind.annotation.*;
-import org.springframework.web.servlet.view.RedirectView;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.ResponseBody;
 
-import java.util.List;
+import java.util.HashMap;
+import java.util.Map;
 
 @Controller
-@RequestMapping("/user")
+@RequiredArgsConstructor
 public class UsersController {
 
-    @Autowired
-    private UsersService usersService;
+    private final UsersService usersService;
 
-    @GetMapping("/login")
-    public String login(Model model) {
-        model.addAttribute("message", "회원가입이 완료되었습니다. 로그인 해주세요.");
-        return "user/login"; // templates/user/login.html로 이동
+    @GetMapping("/users/signup")
+    public String signupPage() {
+        return "signup"; // signup.html을 렌더링
     }
 
-    @GetMapping("/signup")
-    public String signup(Model model) {
-        return "user/signup";
+    @PostMapping("/users/signup")
+    public String signupUser(Users user) {
+        usersService.registerUser(user);
+        return "redirect:/users/login"; // 로그인 페이지로 리다이렉트
+    }
+    @PostMapping("/users/check-email")
+    @ResponseBody
+    public Map<String, Object> checkEmail(@RequestParam String email) {
+        Map<String, Object> response = new HashMap<>();
+        boolean exists = usersService.emailExists(email);
+        response.put("exists", exists);
+        return response;
     }
 
-    @PostMapping("/signup")
-    public RedirectView createUser(@RequestBody UsersDTO usersDTO) {
-        // 사용자 생성
-        UsersDTO createdUser = usersService.createUser(usersDTO);
-
-        // 로그인 페이지로 리디렉션
-        RedirectView redirectView = new RedirectView("/user/login");
-        redirectView.addStaticAttribute("message", "회원가입이 완료되었습니다. 로그인 해주세요."); // 메시지 전달 (선택 사항)
-        return redirectView;
+    @GetMapping("/users/login")
+    public String loginPage(Model model) {
+        return "login"; // login.html을 렌더링
     }
 
-
-    @GetMapping("/{id}")
-    public ResponseEntity<UsersDTO> getUserById(@PathVariable Long id) {
-        return usersService.getUserById(id)
-                .map(userDTO -> new ResponseEntity<>(userDTO, HttpStatus.OK))
-                .orElse(new ResponseEntity<>(HttpStatus.NOT_FOUND));
+    @PostMapping("/users/login")
+    public String loginUser(@RequestParam String email, @RequestParam String password, Model model) {
+        Users user = usersService.loginUser(email, password);
+        if (user != null) {
+            // 로그인 성공 시 세션에 사용자 정보 저장
+            return "redirect:/home"; // 메인 페이지로 리다이렉트
+        } else {
+            model.addAttribute("message", "이메일 또는 비밀번호가 잘못되었습니다.");
+            return "login"; // 로그인 실패 시 로그인 페이지로 다시 돌아감
+        }
     }
-    //수정하기
-    @PutMapping("/{id}")
-    public ResponseEntity<UsersDTO> updateUser(@PathVariable Long id, @RequestBody UsersDTO usersDTO) {
-        UsersDTO updatedUser = usersService.updateUser(id, usersDTO);
-        return new ResponseEntity<>(updatedUser, HttpStatus.OK);
-    }
-
-    //삭제
-    @DeleteMapping("/{id}")
-    public ResponseEntity<Void> deleteUser(@PathVariable Long id) {
-        usersService.deleteUser(id);
-        return new ResponseEntity<>(HttpStatus.NO_CONTENT);
-    }
-
-    //전체 읽기
-    @GetMapping
-    public ResponseEntity<List<UsersDTO>> getAllUsers() {
-        List<UsersDTO> users = usersService.getAllUsers();
-        return new ResponseEntity<>(users, HttpStatus.OK);
-    }
-
 }

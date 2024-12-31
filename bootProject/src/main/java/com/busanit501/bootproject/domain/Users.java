@@ -3,6 +3,9 @@ package com.busanit501.bootproject.domain;
 import jakarta.persistence.*;
 import lombok.*;
 
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+
 @Entity
 @Getter
 @Builder
@@ -26,10 +29,10 @@ public class Users extends BaseEntity{
     private String name; // 사용자 이름
 
     @Column(length = 10, nullable = false)
-    private Integer age; // 사용자 나이 (null 가능)
+    private LocalDate birth; // 사용자 나이 (null 가능)
 
     @Column(nullable = false)
-    private boolean gender; // 성별
+    private String gender; // 성별
 
     @Column(length = 200, nullable = false)
     private String address; // 주소
@@ -40,7 +43,9 @@ public class Users extends BaseEntity{
     @Column(length = 100, nullable = false)
     private String phoneNumber; // 전화번호
 
-    @Column(nullable = false)
-    private boolean isVerified; // 계정 인증 여부
+
+    public void setPassword(String password) {
+        this.password = password;
+    }
 
 }
