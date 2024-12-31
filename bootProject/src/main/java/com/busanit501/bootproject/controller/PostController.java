@@ -3,15 +3,14 @@ package com.busanit501.bootproject.controller;
 import com.busanit501.bootproject.domain.Category;
 import com.busanit501.bootproject.domain.Post;
 import com.busanit501.bootproject.service.post.PostService;
+import lombok.extern.log4j.Log4j2;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-
+import org.springframework.web.bind.annotation.*;
+@Log4j2
 @Controller
 @RequestMapping("/posts")
 public class PostController {
@@ -22,6 +21,7 @@ public class PostController {
         this.postService = postService;
     }
 
+    // 📌 게시글 목록 조회 (페이징)
     @GetMapping
     public String listPosts(Model model,
                             @RequestParam(defaultValue = "0") int page,
@@ -35,31 +35,68 @@ public class PostController {
         return "posts/list";
     }
 
-    // 병원 카테고리 게시글만 조회
-    @GetMapping("/hospital")
-    public String listHospitalPosts(Model model,
-                                    @RequestParam(defaultValue = "0") int page,
-                                    @RequestParam(defaultValue = "10") int size) {
-        Pageable pageable = PageRequest.of(page, size);
-        Page<Post> hospitalPosts = postService.getPostsByCategory(Category.EmergencyHospital, pageable);
-
-        model.addAttribute("postsPage", hospitalPosts);
+    // 📌 게시글 상세 조회
+    @GetMapping("/{id}")
+    public String getPostDetail(@PathVariable Long id,
+                                @RequestParam(value = "page", defaultValue = "0") int page,
+                                Model model) {
+        Post post = postService.getPostById(id);
+        model.addAttribute("post", post);
         model.addAttribute("currentPage", page);
-        model.addAttribute("totalPages", hospitalPosts.getTotalPages());
+        return "posts/detail";
+    }
+
+    // 📌 게시글 수정 페이지
+    @GetMapping("/edit/{id}")
+    public String editPostForm(@PathVariable Long id, Model model) {
+        Post post = postService.getPostById(id);
+        model.addAttribute("post", post);
+        return "posts/edit";
+    }
+
+    // 📌 게시글 수정 처리 (AJAX 요청)
+    @PutMapping("/update/{id}")
+    @ResponseBody
+    public String updatePost(@PathVariable Long id, @RequestBody Post post) {
+        log.info("Update 요청: " + id);
+        postService.updatePost(id, post);
+        return "success";
+    }
+
+    // 📌 게시글 삭제 처리 (AJAX 요청)
+    @DeleteMapping("/delete/{id}")
+    @ResponseBody
+    public String deletePost(@PathVariable Long id) {
+        log.info("Delete 요청: " + id);
+        postService.deletePost(id);
+        return "success";
+    }
+
+    @GetMapping("/category/hospital")
+    public String hospitalPage(Model model,
+                               @RequestParam(defaultValue = "0") int page,
+                               @RequestParam(defaultValue = "8") int size) {
+        Pageable pageable = PageRequest.of(page, size);
+        Page<Post> postsPage = postService.getPostsByCategory(Category.EmergencyHospital, pageable);
+
+        model.addAttribute("postsPage", postsPage);
+        model.addAttribute("currentPage", page);
+        model.addAttribute("totalPages", postsPage.getTotalPages());
         return "posts/hospital";
     }
 
-    // 중고장터 카테고리 게시글만 조회
-    @GetMapping("/useditems")
-    public String listUseditemsPosts(Model model,
-                                    @RequestParam(defaultValue = "0") int page,
-                                    @RequestParam(defaultValue = "10") int size) {
+    @GetMapping("/category/useditems")
+    public String usedItemsPage(Model model,
+                               @RequestParam(defaultValue = "0") int page,
+                               @RequestParam(defaultValue = "8") int size) {
         Pageable pageable = PageRequest.of(page, size);
-        Page<Post> useditemsPosts = postService.getPostsByCategory(Category.UsedItems, pageable);
+        Page<Post> postsPage = postService.getPostsByCategory(Category.UsedItems, pageable);
 
-        model.addAttribute("postsPage", useditemsPosts);
+        model.addAttribute("postsPage", postsPage);
         model.addAttribute("currentPage", page);
-        model.addAttribute("totalPages", useditemsPosts.getTotalPages());
+        model.addAttribute("totalPages", postsPage.getTotalPages());
         return "posts/useditems";
     }
+
+
 }

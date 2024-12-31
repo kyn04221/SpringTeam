@@ -22,18 +22,14 @@ public class PostServiceImpl implements PostService {
     }
 
     @Override
+    public Post getPostById(Long id) {
+        return postRepository.findById(id)
+                .orElseThrow(() -> new RuntimeException("게시글을 찾을 수 없습니다."));
+    }
+
+    @Override
     public Post createPost(Post post) {
         return postRepository.save(post);
-    }
-
-    @Override
-    public Post getPostById(Long id) {
-        return postRepository.findById(id).orElseThrow(() -> new RuntimeException("게시글을 찾을 수 없습니다."));
-    }
-
-    @Override
-    public void deletePost(Long id) {
-        postRepository.deleteById(id);
     }
 
     @Override
@@ -41,8 +37,12 @@ public class PostServiceImpl implements PostService {
         Post existingPost = getPostById(id);
         existingPost.setTitle(post.getTitle());
         existingPost.setContent(post.getContent());
-        existingPost.setCategory(post.getCategory());
         return postRepository.save(existingPost);
+    }
+
+    @Override
+    public void deletePost(Long id) {
+        postRepository.deleteById(id);
     }
 
     @Override

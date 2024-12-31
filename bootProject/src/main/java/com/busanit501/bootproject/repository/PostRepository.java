@@ -14,6 +14,4 @@ public interface PostRepository extends JpaRepository<Post, Long> {
 
     // Enum 타입으로 카테고리 검색
     Page<Post> findByCategory(Category category, Pageable pageable);
-
-    List<Post> findByCategory(Category category);
 }
