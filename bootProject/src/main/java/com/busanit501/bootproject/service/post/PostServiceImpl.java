@@ -49,4 +49,5 @@ public class PostServiceImpl implements PostService {
     public Page<Post> getPostsByCategory(Category category, Pageable pageable) {
         return postRepository.findByCategory(category, pageable);
     }
+
 }

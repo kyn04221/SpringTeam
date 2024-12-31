@@ -4,7 +4,10 @@
       layout:decorate="~{layout/base.html}">
 <body>
 <div layout:fragment="content" class="container mt-5">
-    <h2 >커뮤니티</h2>
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h2 class="text-center flex-grow-1">커뮤니티</h2>
+        <a th:href="@{/posts/register}" class="btn btn-primary">글쓰기</a>
+    </div>
 
     <div class="list-group">
         <div class="list-group-item text-center py-4" th:if="${postsPage.empty}">

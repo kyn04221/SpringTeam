@@ -7,7 +7,11 @@
 </head>
 <body>
 <div layout:fragment="content" class="container mt-5">
-    <h2 class="mb-4 text-center">동물병원</h2>
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h2 class="text-center flex-grow-1">동물병원</h2>
+        <a th:href="@{/posts/register}" class="btn btn-primary">글쓰기</a>
+    </div>
+
 
     <div class="row row-cols-1 row-cols-md-4 g-4">
         <div class="col" th:each="post : ${postsPage.content}">

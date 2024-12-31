@@ -2,24 +2,71 @@ package com.busanit501.bootproject.controller;
 
 import com.busanit501.bootproject.domain.Category;
 import com.busanit501.bootproject.domain.Post;
+import com.busanit501.bootproject.domain.Users;
+import com.busanit501.bootproject.repository.UsersRepository;
 import com.busanit501.bootproject.service.post.PostService;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Controller;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
+
+import java.security.Principal;
+import java.util.NoSuchElementException;
+
 @Log4j2
 @Controller
 @RequestMapping("/posts")
 public class PostController {
 
     private final PostService postService;
+    private final UsersRepository usersRepository;
 
-    public PostController(PostService postService) {
+    public PostController(PostService postService, UsersRepository usersRepository) {
         this.postService = postService;
+        this.usersRepository = usersRepository;
     }
+
+    // 글쓰기 GET
+    @GetMapping("/register")
+    public String showRegisterForm(Model model) {
+        model.addAttribute("post", new Post());
+        return "posts/register";
+    }
+
+//    // 글쓰기 Post -> 로그인 필요함 이걸로 할거임 나중에
+//    @PostMapping("/register")
+//    public String registerPost(@ModelAttribute Post post, Principal principal) {
+//        Users user = usersRepository.findByEmail(principal.getName())
+//                .orElseThrow(() -> new IllegalStateException("유저를 찾을 수 없습니다."));
+//
+//        post.setUser(user);
+//        postService.createPost(post);
+//
+//        return "redirect:/posts";  // 글 작성 후 목록으로 리다이렉트
+//    }
+
+    // 테스트용 임시로 유저데이터 이용해서 테스트. 이거 나중에 버릴거에요
+    @PostMapping("/register")
+    public String registerPost(@RequestBody Post post) {
+        log.info("Received Post: " + post);
+        log.info("Category: " + post.getCategory());
+
+        if (post.getCategory() == null) {
+            throw new IllegalArgumentException("Category is null");
+        }
+
+        Users user = usersRepository.findById(1L)
+                .orElseThrow(() -> new NoSuchElementException("User not found"));
+
+        post.setUser(user);
+        postService.createPost(post);
+        return "redirect:/posts";
+    }
+
 
     // 📌 게시글 목록 조회 (페이징)
     @GetMapping
