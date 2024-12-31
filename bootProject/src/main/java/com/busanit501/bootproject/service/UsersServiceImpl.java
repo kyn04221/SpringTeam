@@ -20,6 +20,9 @@ public class UsersServiceImpl implements UsersService {
 
     @Override
     public UsersDTO createUser(UsersDTO usersDTO) {
+        if (usersRepository.findByEmail(usersDTO.getEmail()).isPresent()) {
+            throw new RuntimeException("이미 사용 중인 이메일입니다.");
+        }
         Users user = Users.builder()
                 .email(usersDTO.getEmail())
                 .password(usersDTO.getPassword())

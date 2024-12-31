@@ -9,6 +9,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.servlet.view.RedirectView;
 
 import java.util.List;
 
@@ -21,14 +22,26 @@ public class UsersController {
 
     @GetMapping("/login")
     public String login(Model model) {
+        model.addAttribute("message", "회원가입이 완료되었습니다. 로그인 해주세요.");
         return "user/login"; // templates/user/login.html로 이동
     }
 
-    @PostMapping
-    public ResponseEntity<UsersDTO> createUser(@RequestBody UsersDTO usersDTO) {
-        UsersDTO createdUser = usersService.createUser(usersDTO);
-        return new ResponseEntity<>(createdUser, HttpStatus.CREATED);
+    @GetMapping("/signup")
+    public String signup(Model model) {
+        return "user/signup";
     }
+
+    @PostMapping("/signup")
+    public RedirectView createUser(@RequestBody UsersDTO usersDTO) {
+        // 사용자 생성
+        UsersDTO createdUser = usersService.createUser(usersDTO);
+
+        // 로그인 페이지로 리디렉션
+        RedirectView redirectView = new RedirectView("/user/login");
+        redirectView.addStaticAttribute("message", "회원가입이 완료되었습니다. 로그인 해주세요."); // 메시지 전달 (선택 사항)
+        return redirectView;
+    }
+
 
     @GetMapping("/{id}")
     public ResponseEntity<UsersDTO> getUserById(@PathVariable Long id) {
