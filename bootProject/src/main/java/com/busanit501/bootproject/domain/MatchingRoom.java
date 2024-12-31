@@ -8,11 +8,12 @@ import java.sql.Timestamp;
 @Entity
 @Table(name = "MatchingRoom")
 @Getter
+@Setter
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor
 @ToString
-public class MatchingRoom {
+public class MatchingRoom extends BaseEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private int roomId;

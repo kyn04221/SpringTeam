@@ -12,7 +12,7 @@ import java.sql.Timestamp;
 @AllArgsConstructor
 @NoArgsConstructor
 @Builder
-public class MachingRoomDTO {
+public class MatchingRoomDTO {
     private int roomId;
     private int hostId;
     private String title;

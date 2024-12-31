@@ -1,0 +1,70 @@
+<!doctype html>
+<html lang="ko" xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout" xmlns:th="http://www.thymeleaf.org"
+      layout:decorate="~{layout/base.html}">
+<body>
+<!-- content -->
+<div layout:fragment="content">
+
+    <div style="display: flex; height: 100vh;">
+        <!-- Left Section: Chat Room List -->
+        <div style="width: 50%; padding: 10px; border-right: 1px solid #ccc; overflow-y: auto;">
+            <h2>채팅방 목록</h2>
+            <ul style="list-style-type: none; padding-left: 0;">
+                <li th:each="room : ${roomList}" style="border-bottom: 1px solid #eee; padding: 10px;">
+                    <div>
+                        <h3 th:text="${room.title}">채팅방 제목</h3>
+                        <p th:text="${room.description}">채팅방 설명</p>
+                        <p th:text="'인원: ' + ${room.currentParticipants} + ' / ' + ${room.maxParticipants}">인원</p>
+                    </div>
+                    <button th:id="'room-' + ${room.roomId}" th:text="'입장'" th:onclick="openChatRoom(${room.roomId})">입장</button>
+                </li>
+            </ul>
+        </div>
+
+        <!-- Right Section: Chat Content -->
+        <div style="width: 50%; padding: 10px; overflow-y: auto;">
+            <h2 id="chatRoomTitle">채팅방을 선택해주세요.</h2>
+            <div id="chatContent">
+                <p>채팅방을 선택해주세요.</p>
+            </div>
+            <div id="chatInput" style="margin-top: 20px;">
+                <textarea id="messageInput" rows="4" style="width: 100%;" placeholder="메시지를 입력하세요..."></textarea>
+                <button onclick="sendMessage()">보내기</button>
+            </div>
+        </div>
+    </div>
+
+</div>
+<!-- content -->
+
+<!-- javascript -->
+<script layout:fragment="javascript" th:inline="javascript">
+    // 채팅방을 클릭하면 해당 채팅방의 대화 내용이 보이도록 설정
+    function openChatRoom(roomId) {
+        // 여기에 Ajax 요청 또는 다른 방식으로 채팅방 대화 내용을 불러오는 로직 추가
+        var roomTitle = document.querySelector('#room-' + roomId + ' h3').innerText;
+        document.getElementById('chatRoomTitle').innerText = roomTitle;
+
+        // 대화 내용 표시 (여기서는 예시로 텍스트 추가)
+        document.getElementById('chatContent').innerHTML = '<p>채팅방 ' + roomId + '의 대화 내용을 불러옵니다...</p>';
+
+        // 예시로, 채팅방 클릭 시 텍스트 영역을 비워놓기
+        document.getElementById('messageInput').value = '';
+    }
+
+    // 메시지 보내기
+    function sendMessage() {
+        var message = document.getElementById('messageInput').value;
+        if (message.trim() === '') {
+            alert('메시지를 입력해주세요.');
+            return;
+        }
+        // 메시지를 보내는 로직 추가 (예: Ajax 요청)
+        alert('메시지 보내기: ' + message);
+        document.getElementById('messageInput').value = '';  // 입력창 초기화
+    }
+</script>
+<!-- javascript -->
+
+</body>
+</html>
