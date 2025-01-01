@@ -1,0 +1,82 @@
+<!doctype html>
+<html lang="ko" xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      xmlns:th="http://www.thymeleaf.org"
+      layout:decorate="~{layout/base.html}">
+<body>
+<div layout:fragment="content" class="container mt-5">
+    <h2 class="mb-4">게시글 수정</h2>
+
+    <form id="editForm" th:object="${post}" th:data-id="${post.postId}">
+        <input type="hidden" th:value="${post.postId}" id="postId">
+        <div class="mb-3">
+            <label for="title" class="form-label">제목</label>
+            <input type="text" class="form-control" id="title" th:field="*{title}" required>
+        </div>
+        <div class="mb-3">
+            <label for="content" class="form-label">내용</label>
+            <textarea class="form-control" id="content" th:field="*{content}" rows="5" required></textarea>
+        </div>
+        <button type="submit" class="btn btn-primary">수정 완료</button>
+    </form>
+
+    <button class="btn btn-danger mt-3" id="deleteBtn" th:data-id="${post.postId}">삭제</button>
+
+    <!-- 🟩 JavaScript 코드 삽입 -->
+    <script>
+        document.querySelector("#editForm").onsubmit = function(e) {
+            e.preventDefault();
+
+            const postId = this.dataset.id;
+            const formData = new FormData(this);
+            const jsonObject = {};
+            formData.forEach((value, key) => {
+                jsonObject[key] = value;
+            });
+
+            fetch(`/posts/update/${postId}`, {
+                method: "PUT",
+                headers: {
+                    "Content-Type": "application/json"
+                },
+                body: JSON.stringify(jsonObject)
+            })
+                .then(response => {
+                    if (response.ok) {
+                        alert("게시글이 수정되었습니다.");
+                        window.location.href = `/posts/${postId}`;
+                    } else {
+                        alert("수정 실패: " + response.statusText);
+                    }
+                })
+                .catch(error => {
+                    console.error("Error:", error);
+                    alert("오류가 발생했습니다.");
+                });
+        };
+
+        // 삭제 기능
+        document.querySelector("#deleteBtn").onclick = function() {
+            const postId = this.dataset.id;
+
+            if (confirm("정말 삭제하시겠습니까?")) {
+                fetch(`/posts/delete/${postId}`, {
+                    method: "DELETE"
+                })
+                    .then(response => {
+                        if (response.ok) {
+                            alert("게시글이 삭제되었습니다.");
+                            window.location.href = "/posts";
+                        } else {
+                            alert("삭제 실패: " + response.statusText);
+                        }
+                    })
+                    .catch(error => {
+                        console.error("Error:", error);
+                        alert("오류가 발생했습니다.");
+                    });
+            }
+        };
+    </script>
+</div>
+</body>
+</html>
