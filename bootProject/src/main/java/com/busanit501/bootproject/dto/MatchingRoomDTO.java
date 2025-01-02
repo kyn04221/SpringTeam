@@ -1,6 +1,8 @@
 package com.busanit501.bootproject.dto;
 
 import com.busanit501.bootproject.domain.RoomStatus;
+import jakarta.validation.constraints.Max;
+import jakarta.validation.constraints.Size;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -13,6 +15,7 @@ import java.sql.Timestamp;
 @NoArgsConstructor
 @Builder
 public class MatchingRoomDTO {
+
     private int roomId;
     private int hostId;
     private String title;

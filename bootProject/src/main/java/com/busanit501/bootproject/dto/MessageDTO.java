@@ -15,7 +15,6 @@ public class MessageDTO {
     private int messageId;
     private int chatRoomId;
     private int senderId;
-    private int receiverId;
     private String content;
     private Timestamp sentAt;
     private boolean isRead;
