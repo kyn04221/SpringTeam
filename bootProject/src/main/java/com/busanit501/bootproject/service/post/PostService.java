@@ -9,7 +9,7 @@ public interface PostService {
     Page<Post> getAllPosts(Pageable pageable);
     Post getPostById(Long id);
     Post createPost(Post post);
-    Post updatePost(Long id, Post post);
+    Post editPost(Long id, Post post);
     void deletePost(Long id);
     Page<Post> getPostsByCategory(Category category, Pageable pageable);
 

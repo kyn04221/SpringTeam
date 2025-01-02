@@ -6,6 +6,7 @@ import com.busanit501.bootproject.repository.PostRepository;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 @Service
 public class PostServiceImpl implements PostService {
@@ -24,7 +25,7 @@ public class PostServiceImpl implements PostService {
     @Override
     public Post getPostById(Long id) {
         return postRepository.findById(id)
-                .orElseThrow(() -> new RuntimeException("게시글을 찾을 수 없습니다."));
+                .orElse(null);  // 게시글이 없으면 null 반환
     }
 
     @Override
@@ -33,10 +34,19 @@ public class PostServiceImpl implements PostService {
     }
 
     @Override
-    public Post updatePost(Long id, Post post) {
-        Post existingPost = getPostById(id);
-        existingPost.setTitle(post.getTitle());
-        existingPost.setContent(post.getContent());
+    @Transactional
+    public Post editPost(Long id, Post updatedPost) {
+        Post existingPost = postRepository.findById(id)
+                .orElseThrow(() -> new RuntimeException("게시글을 찾을 수 없습니다."));
+
+        existingPost.setTitle(updatedPost.getTitle());
+        existingPost.setContent(updatedPost.getContent());
+        existingPost.setCategory(updatedPost.getCategory());
+
+        if (updatedPost.getImageUrl() != null) {
+            existingPost.setImageUrl(updatedPost.getImageUrl());
+        }
+
         return postRepository.save(existingPost);
     }
 
