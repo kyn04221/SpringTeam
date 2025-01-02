@@ -3,11 +3,13 @@ package com.busanit501.bootproject.controller;
 import com.busanit501.bootproject.dto.UserDTO;
 import com.busanit501.bootproject.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 
+import java.net.URI;
 import java.util.List;
 import java.util.Map;
 
@@ -27,9 +29,15 @@ public class UserController {
     // 로그인 처리
     @PostMapping("/login")
     public ResponseEntity<?> login(@RequestParam String email, @RequestParam String password) {
+        UserDTO user = userService.getUserByEmail(email); // 이메일로 사용자 조회
+        if (user != null && user.getPassword().equals(password)) {
+            return ResponseEntity.ok().build();
+        } else {
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
+                    .body("로그인 실패: 이메일 또는 비밀번호가 잘못되었습니다.");
+        }
         // 로그인 로직 구현 (예: 인증 서비스 호출)
         // 성공 시 사용자 세션 설정, 실패 시 오류 메시지 반환
-        return ResponseEntity.ok().build();
     }
 
     // 회원가입 페이지
@@ -41,8 +49,10 @@ public class UserController {
     // 회원가입 처리
     @PostMapping("/signup")
     public ResponseEntity<UserDTO> signup(@ModelAttribute UserDTO userDTO) {
-        UserDTO createdUser = userService.createUser(userDTO);
-        return ResponseEntity.ok(createdUser);
+        userService.createUser(userDTO);
+        return ResponseEntity.status(HttpStatus.FOUND)
+                .location(URI.create("/users/login"))
+                .build();
         //리다이렉트로 데이터 탑재후 login페이지로 이동시키면 됌
     }
 

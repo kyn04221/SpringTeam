@@ -60,4 +60,10 @@ public class UserServiceImpl implements UserService {
     public boolean checkEmailExists(String email) {
         return userRepository.findByEmail(email) != null;
     }
+
+    @Override
+    public UserDTO getUserByEmail(String email) {
+        User user = userRepository.findByEmail(email);
+        return user != null ? modelMapper.map(user, UserDTO.class) : null;
+    }
 }
