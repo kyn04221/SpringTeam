@@ -1,4 +1,4 @@
-package com.busanit501.bootproject.DTO;
+package com.busanit501.bootproject.dto;
 
 import com.busanit501.bootproject.domain.Gender;
 import lombok.AllArgsConstructor;
@@ -16,10 +16,10 @@ import java.time.LocalDateTime;
 @NoArgsConstructor
 public class UserDTO {
 
-    private int userId; // 사용자 ID
+    private Long userId; // 사용자 ID
     private String email; // 사용자 이메일
     private String name; // 사용자 이름
-    private Integer age; // 사용자 나이
+    private int age; // 사용자 나이
     private Gender gender; // 성별
     private String address; // 주소
     private String profilePicture; // 프로필 사진 URL
