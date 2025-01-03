@@ -29,7 +29,7 @@ public class UserController {
     // 로그인 페이지
     @GetMapping("/login")
     public String loginForm(Model model) {
-        return "user/login"; // login.html로 이동
+        return "login2"; // login.html로 이동
     }
 
     // 로그인 처리
@@ -42,7 +42,7 @@ public class UserController {
             return "redirect:/users/main"; // main.html로 리다이렉션
         }
         log.info("로그인 실패");
-        redirectAttributes.addFlashAttribute("message", "로그인 실패: 이메일 또는 비밀번호가 잘못되었습니다.");
+        redirectAttributes.addFlashAttribute("message", "이메일 또는 비밀번호가 잘못되었습니다.");
         return "redirect:/users/login"; // 로그인 페이지로 리다이렉션
     }
     // 회원가입 페이지

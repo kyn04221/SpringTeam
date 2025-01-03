@@ -1,0 +1,21 @@
+@charset "UTF-8";
+
+/* login */
+.login-box {width: 100%; max-width: 380px;margin: auto; padding: 50px 15px; text-align: center;}
+.login-box h2 {font-size: 20px; font-weight: 700; margin-bottom: 20px;}
+#login-form {padding: 0 0 30px; margin: 0 0 20px; border-bottom: 1px solid #D9D9D9;}
+#login-form .input-group {margin: 0 0 10px;}
+#login-form .btn-box {margin: 20px 0 0;}
+#login-form .signupBtn {display: block; margin: 15px 0 0; font-size: 14px;}
+
+
+.social-login {}
+.social-login .btn:not(:last-child) {margin: 0 0 10px;}
+.social-login .btn.kakao {background: #FBE750; color: #000;}
+.social-login .btn.naver {background: #5BC467; color: #fff;}
+.social-login .btn.google {background: #F4F4F4; color: #000;}
+
+.text-danger {font-size: 13px; color: #F61414; margin: 0 0 10px;}
+
+
+/* login */

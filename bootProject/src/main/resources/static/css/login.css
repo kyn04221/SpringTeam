@@ -1,28 +1,11 @@
-body, html {
-    height: 100%; /* 전체 높이를 사용 */
-    margin: 0; /* 기본 마진 제거 */
-}
-
-.login-container {display: flex; align-items: center; justify-content: center; width: 100vw; height: 100vh;}
-.container {
-    display: flex;
-    justify-content: center; /* 가로 중앙 정렬 */
-    align-items: center; /* 세로 중앙 정렬 */
-    height: 100vh; /* 화면 전체 높이 */
-}
-.login {
-    background-color: #333;
-    color: #fff;
-    padding: 10px 20px;
-    border-radius: 5px;
-}
 
 .login-box {
-    background-color: #fff;
     padding: 40px;
     border-radius: 10px;
     box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
-    width: 500px;
+    width: 100%;
+    max-width: 380px;
+    padding: 0 15px;
     text-align: center;
 }
 
