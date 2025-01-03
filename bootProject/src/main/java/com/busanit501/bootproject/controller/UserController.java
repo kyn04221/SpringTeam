@@ -39,7 +39,7 @@ public class UserController {
         if (user != null && user.getPassword().equals(password)) {
             session.setAttribute("user", user); // 세션에 사용자 정보 저장
             log.info("로그인 성공");
-            return "redirect:/main"; // main.html로 리다이렉션
+            return "redirect:/users/main"; // main.html로 리다이렉션
         }
         log.info("로그인 실패");
         redirectAttributes.addFlashAttribute("message", "로그인 실패: 이메일 또는 비밀번호가 잘못되었습니다.");
