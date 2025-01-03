@@ -7,6 +7,7 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 
 import java.time.LocalDateTime;
+import java.util.List;
 
 
 @Entity
@@ -20,9 +21,9 @@ public class User extends BaseEntity {
 
         @Id
         @GeneratedValue(strategy = GenerationType.IDENTITY)
-        private int userId; // 사용자 ID
+        private Long userId; // 사용자 ID
 
-        @Column(nullable = false, unique = true)
+        @Column(nullable = false, unique = true) // 겹치면 안됨 유니크
         private String email; // 사용자 이메일 (로그인 아이디로 사용)
 
         @Column(nullable = false)
@@ -31,7 +32,7 @@ public class User extends BaseEntity {
         @Column(nullable = false)
         private String name; // 사용자 이름
 
-        private Integer age; // 사용자 나이
+        private int age; // 사용자 나이
 
         @Enumerated(EnumType.STRING)
         private Gender gender; // 성별 (Male/Female)
@@ -49,4 +50,14 @@ public class User extends BaseEntity {
         private LocalDateTime createdAt; // 계정 생성 시간
 
         private LocalDateTime updatedAt; // 계정 수정 시간
+
+
+        //-----------------------------
+        @OneToMany(mappedBy = "owner")
+        private List<Pets> pets; // 사용자가 소유한 반려동물 리스트
+
+        @OneToMany(mappedBy = "user")
+        private List<Calendar> schedules; // 사용자가 생성한 일정 리스트
 }
+
+

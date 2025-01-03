@@ -1,4 +1,4 @@
-package com.busanit501.bootproject.DTO;
+package com.busanit501.bootproject.dto;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -16,8 +16,9 @@ import java.time.LocalTime;
 @NoArgsConstructor
 public class CalendarDTO {
 
-    private Integer scheduleId;  // 일정 ID
-    private Integer userId;      // 사용자 ID
+    private Long scheduleId;  // 일정 ID
+    private Long userId;      // 사용자 ID
+    private String schedulename; // 일정명
     private LocalDate walkDate;  // 산책 날짜
     private LocalTime walkTime;  // 산책 시간
     private String status;       // 산책 상태

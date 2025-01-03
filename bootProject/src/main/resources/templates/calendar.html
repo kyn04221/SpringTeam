@@ -9,11 +9,11 @@
 <body>
 
 <div layout:fragment="content">
-    <div id="main">
+
+
+    <div id="calendar-container" class="container-fluid">
         <div id="calendar"></div>
-
     </div>
-
 
     <div id="contextMenu">
         <a href="#" id="addEvent">일정 추가</a>
@@ -25,6 +25,8 @@
     <script>
         document.addEventListener('DOMContentLoaded', function () {
             var calendarEl = document.getElementById('calendar');
+            var selectedDate = null;
+
             var calendar = new FullCalendar.Calendar(calendarEl, {
                 initialView: 'dayGridMonth',
                 headerToolbar: {
@@ -42,9 +44,28 @@
                     selectedDate = info.startStr; // 선택된 날짜 저장
                     console.log('선택된 날짜:', selectedDate);
                 }
-
             });
             calendar.render();
+
+            // 서버에서 일정 불러오기
+            async function loadSchedules() {
+                try {
+                    const schedules = await getSchedules({ page: 1, size: 100 }); // 모든 일정 불러오기
+                    schedules.forEach(schedule => {
+                        calendar.addEvent({
+                            id: schedule.id,
+                            title: schedule.title,
+                            start: schedule.start,
+                            end: schedule.end,
+                            allDay: schedule.allDay
+                        });
+                    });
+                } catch (error) {
+                    console.error('일정을 불러오는 중 오류 발생:', error);
+                }
+            }
+
+            await loadSchedules();
 
             // 오른쪽 클릭 메뉴 표시
             calendarEl.addEventListener('contextmenu', function(event) {
