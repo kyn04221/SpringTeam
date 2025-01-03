@@ -2,21 +2,29 @@ package com.busanit501.bootproject.controller;
 
 import com.busanit501.bootproject.dto.UserDTO;
 import com.busanit501.bootproject.service.UserService;
+import jakarta.servlet.http.HttpSession;
+import lombok.extern.log4j.Log4j2;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
+import java.net.URI;
 import java.util.List;
 import java.util.Map;
 
+@Log4j2
 @Controller
 @RequestMapping("/users")
 public class UserController {
 
     @Autowired
     private UserService userService;
+    @Autowired
+    private HttpSession session;
 
     // 로그인 페이지
     @GetMapping("/login")
@@ -26,12 +34,17 @@ public class UserController {
 
     // 로그인 처리
     @PostMapping("/login")
-    public ResponseEntity<?> login(@RequestParam String email, @RequestParam String password) {
-        // 로그인 로직 구현 (예: 인증 서비스 호출)
-        // 성공 시 사용자 세션 설정, 실패 시 오류 메시지 반환
-        return ResponseEntity.ok().build();
+    public String login(@RequestParam String email, @RequestParam String password, RedirectAttributes redirectAttributes) {
+        UserDTO user = userService.getUserByEmail(email);
+        if (user != null && user.getPassword().equals(password)) {
+            session.setAttribute("user", user); // 세션에 사용자 정보 저장
+            log.info("로그인 성공");
+            return "redirect:/users/main"; // main.html로 리다이렉션
+        }
+        log.info("로그인 실패");
+        redirectAttributes.addFlashAttribute("message", "로그인 실패: 이메일 또는 비밀번호가 잘못되었습니다.");
+        return "redirect:/users/login"; // 로그인 페이지로 리다이렉션
     }
-
     // 회원가입 페이지
     @GetMapping("/signup")
     public String signupForm(Model model) {
@@ -41,8 +54,10 @@ public class UserController {
     // 회원가입 처리
     @PostMapping("/signup")
     public ResponseEntity<UserDTO> signup(@ModelAttribute UserDTO userDTO) {
-        UserDTO createdUser = userService.createUser(userDTO);
-        return ResponseEntity.ok(createdUser);
+        userService.createUser(userDTO);
+        return ResponseEntity.status(HttpStatus.FOUND)
+                .location(URI.create("/users/login"))
+                .build();
         //리다이렉트로 데이터 탑재후 login페이지로 이동시키면 됌
     }
 
@@ -86,5 +101,10 @@ public class UserController {
     public ResponseEntity<Void> deleteUser(@PathVariable Long userId) {
         userService.deleteUser(userId);
         return ResponseEntity.noContent().build();
+    }
+
+    @GetMapping("/main")
+    public String mainPage(Model model) {
+        return "/main"; // main.html로 이동
     }
 }
