@@ -98,7 +98,7 @@ public String registerPost(@RequestParam("title") String title,
     String imageUrl = null;
 
     // 절대 경로로 uploads 디렉터리 설정
-    String uploadDir = "Togedog/bootProject/src/main/resources/static/uploads";
+    String uploadDir = "uploads";
     Path uploadPath = Paths.get(uploadDir);  // Path 객체로 변환
 
     // uploads 디렉터리 생성 (존재하지 않는 경우)
