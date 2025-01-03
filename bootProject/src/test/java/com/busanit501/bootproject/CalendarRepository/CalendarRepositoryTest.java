@@ -23,7 +23,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 
 
 //@DataJpaTest
-@Transactional
+//@Transactional
 @Log4j2
 @SpringBootTest
 public class CalendarRepositoryTest {
@@ -42,8 +42,8 @@ public class CalendarRepositoryTest {
         // 일정 추가
         Calendar calendar = Calendar.builder()
                 .schedulename("Morning Walk")
-                .walkDate(LocalDate.of(2025, 1, 5))
-                .walkTime(LocalTime.of(7, 30))
+                .walkDate(LocalDate.of(2024, 12, 3))
+                .walkTime(LocalTime.of(17, 2))
                 .user(testUser) // 데이터베이스에서 가져온 사용자 설정
                 .status(ScheduleStatus.SCHEDULED)
                 .build();

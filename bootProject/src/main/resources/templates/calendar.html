@@ -25,8 +25,6 @@
     <script>
         document.addEventListener('DOMContentLoaded', function () {
             var calendarEl = document.getElementById('calendar');
-            var selectedDate = null;
-
             var calendar = new FullCalendar.Calendar(calendarEl, {
                 initialView: 'dayGridMonth',
                 headerToolbar: {
@@ -38,8 +36,8 @@
                 businessHours: true,
                 editable: true,
                 selectable: true,
-                events: [],
-                // 날짜 선택 시 선택된 날짜 저장
+                events: [],  // 초기 일정을 빈 배열로 설정
+                // timeZone: 'local',  // 타임존 설정 (예: 로컬 타임존)
                 select: function(info) {
                     selectedDate = info.startStr; // 선택된 날짜 저장
                     console.log('선택된 날짜:', selectedDate);
@@ -47,29 +45,10 @@
             });
             calendar.render();
 
-            // 서버에서 일정 불러오기
-            async function loadSchedules() {
-                try {
-                    const schedules = await getSchedules({ page: 1, size: 100 }); // 모든 일정 불러오기
-                    schedules.forEach(schedule => {
-                        calendar.addEvent({
-                            id: schedule.id,
-                            title: schedule.title,
-                            start: schedule.start,
-                            end: schedule.end,
-                            allDay: schedule.allDay
-                        });
-                    });
-                } catch (error) {
-                    console.error('일정을 불러오는 중 오류 발생:', error);
-                }
-            }
-
-            await loadSchedules();
-
             // 오른쪽 클릭 메뉴 표시
+            var contextMenu = document.getElementById('contextMenu');
             calendarEl.addEventListener('contextmenu', function(event) {
-                if (selectedDate) { // 날짜가 선택된 경우
+                if (selectedDate) {
                     event.preventDefault(); // 기본 오른쪽 클릭 메뉴 방지
                     var x = event.clientX;
                     var y = event.clientY;
@@ -83,8 +62,8 @@
                         var eventTitle = prompt('이벤트 제목을 입력하세요:');
                         if (eventTitle) {
                             calendar.addEvent({
-                                title: eventTitle,
-                                start: selectedDate, // 선택된 날짜에 일정 추가
+                                title: event.schedulename,
+                                start: new Date(event.walkDate), // 문자열을 Date 객체로 변환
                                 allDay: true
                             });
                         }
@@ -98,6 +77,30 @@
                 contextMenu.style.display = 'none';
             });
 
+            // 비동기로 서버에서 일정 데이터 가져오기
+            fetch('/api/calendar/events')
+                .then(response => response.json())  // JSON 형식으로 변환
+                .then(events => {
+                    events.forEach(event => {
+                        //--------------------------------------
+                        // // 가져온 일정 데이터를 FullCalendar에 추가
+                        // calendar.addEvent({
+                        //     title: event.schedulename,
+                        //     start: event.walkDate, // 이벤트 날짜
+                        //     allDay: true
+                        //--------------------------------------
+                        var eventDate = new Date(event.walkDateIso);  // UTC로 변환된 날짜 사용
+                        calendar.addEvent({
+                            title: event.schedulename,
+                            start: eventDate,  // 변환된 로컬 시간
+                            allDay: true
+                            //--------------------------------------
+                        });
+                    });
+                })
+                .catch(error => {
+                    console.error('일정 데이터 로딩 실패:', error);
+                });
         });
     </script>
 </div>
