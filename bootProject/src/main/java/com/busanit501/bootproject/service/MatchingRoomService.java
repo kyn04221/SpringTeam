@@ -11,7 +11,7 @@ public interface MatchingRoomService {
     //매칭룸업데이트
     void updateMatchingRoom(MatchingRoomDTO matchingRoomDTO);
     //매칭룸삭세
-    void deleteMatchingRoom(int matchingRoomID);
+    void deleteMatchingRoom(int roomId);
     //매칭룸전체조회
     List<MatchingRoomDTO> searchAllMatchingRoom(String keyword,int userId);
 }

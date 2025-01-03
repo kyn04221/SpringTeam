@@ -1,23 +1,18 @@
 package com.busanit501.bootproject.controller;
 
 import com.busanit501.bootproject.dto.MatchingRoomDTO;
-import com.busanit501.bootproject.dto.RoomParticipantsDTO;
 import com.busanit501.bootproject.dto.RoomRegisterDTO;
 import com.busanit501.bootproject.dto.UserDTO;
 import com.busanit501.bootproject.service.MatchingRoomService;
-import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
-import org.springframework.validation.BindException;
-import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
+
 
 @Controller
 @Log4j2
@@ -50,12 +45,18 @@ public class MatchingRoomController {
         return "redirect:/matchingRoom/roomList";
     }
 
+    @PutMapping("/roomUpdate")
+    public String updateRoom(@RequestBody MatchingRoomDTO roomDTO, RedirectAttributes redirectAttributes) {
+        matchingRoomService.updateMatchingRoom(roomDTO);
+        return "redirect:/matchingRoom/roomList";
+    }
 
-//    @PostMapping("/roomRegister")
-//    public void registerRoom(@RequestBody RoomRegisterDTO roomRegisterDTO){
-//        // 서비스 호출: 두 DTO를 전달
-//        matchingRoomService.addMatchingRoom(roomRegisterDTO.getMatchingRoomDTO(), roomRegisterDTO.getRoomParticipantsDTO());
-//        //return "redirect:/matchingRoom/roomRegister";
-//    }
+    // 채팅방 삭제
+    @DeleteMapping("/roomDelete/{roomId}")
+    public String deleteRoom(@PathVariable int roomId) {
+        matchingRoomService.deleteMatchingRoom(roomId);
+        return "redirect:/matchingRoom/roomList";
+    }
+
 
 }

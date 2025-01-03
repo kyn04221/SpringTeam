@@ -71,8 +71,8 @@ public class MatchingRoomServiceImpl implements MatchingRoomService {
     }
 
     @Override
-    public void deleteMatchingRoom(int matchingRoomID) {
-        matchingRoomRepository.deleteById(matchingRoomID);
+    public void deleteMatchingRoom(int roomId) {
+        matchingRoomRepository.deleteById(roomId);
     }
 
     @Override

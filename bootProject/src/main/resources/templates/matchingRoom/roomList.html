@@ -1,5 +1,7 @@
 <!doctype html>
-<html lang="ko" xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout" xmlns:th="http://www.thymeleaf.org"
+<html lang="ko"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      xmlns:th="http://www.thymeleaf.org"
       layout:decorate="~{layout/base.html}">
 
 <head>
@@ -69,6 +71,13 @@
 
         .chat-list-item:hover {
             background-color: #f9f9f9;
+        }
+
+        .room-info-modal-body {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            text-align: center;
         }
 
         .chat-avatar {
@@ -184,22 +193,24 @@
                 <div class="search-container" id="searchContainer">
                     <form action="/matchingRoom/roomList" method="get" id="searchForm">
                         <input type="text" name="keyword" placeholder="채팅방 제목으로 검색..." th:value="${keyword}">
-<!--                        <button type="submit" style="display: none;">검색</button>-->
+                        <!--                        <button type="submit" style="display: none;">검색</button>-->
                     </form>
                 </div>
-<!--                <button class="icon-button" id="searchButton">🔍</button>-->
+                <!--                <button class="icon-button" id="searchButton">🔍</button>-->
                 <button class="icon-button" id="addButton">➕</button>
+
             </div>
 
-            <div th:each="room : ${roomList}" class="chat-list-item" data-room-id="${room.id}"
-                 data-current-participants="${room.currentParticipants}" data-max-participants="${room.maxParticipants}">
+            <div th:each="room : ${roomList}" class="chatInfo">
                 <div class="chat-avatar"></div>
                 <div class="chat-preview">
+                    <h4 th:text="${room.roomId}" hidden="hidden">방번호</h4>
+                    <h4 th:text="${room.hostId}" hidden="hidden">호스트번호</h4>
                     <h4 th:text="${room.title}">채팅방 제목</h4>
+                    <span th:text="${room.currentParticipants + ' / ' + room.maxParticipants}">0 / 0</span>
                     <p th:text="${room.description}">채팅방 설명</p>
                 </div>
             </div>
-
         </div>
 
         <div class="chat-window">
@@ -217,68 +228,105 @@
                 <button>전송</button>
             </div>
         </div>
-    </div>
 
-    <div class="modal fade registerModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
-        <div class="modal-dialog">
-            <div class="modal-content">
-                <div class="modal-header">
-                    <h5 class="modal-title" id="exampleModalLabel">채팅방 생성</h5>
-                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-                </div>
-                <div class="modal-body">
-                    <div class="input-group mb-3">
-                        <span class="input-group-text">방 이름</span>
-                        <input type="text" class="form-control title">
+        <!--    채팅방 생성모달-->
+        <div class="modal fade registerModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+            <div class="modal-dialog">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title" id="exampleModalLabel">채팅방 생성</h5>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                     </div>
-                    <div class="input-group mb-3">
-                        <span class="input-group-text">설명</span>
-                        <input type="text" class="form-control description">
+                    <div class="modal-body">
+                        <div class="input-group mb-3">
+                            <span class="input-group-text">방 이름</span>
+                            <input type="text" class="form-control title">
+                        </div>
+                        <div class="input-group mb-3">
+                            <span class="input-group-text">설명</span>
+                            <input type="text" class="form-control description">
+                        </div>
+                        <div class="input-group mb-3">
+                            <span class="input-group-text">최대인원</span>
+                            <input type="number" class="form-control maxParticipants">
+                        </div>
                     </div>
-                    <div class="input-group mb-3">
-                        <span class="input-group-text">최대인원</span>
-                        <input type="number" class="form-control maxParticipants">
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary registerCloseBtn">취소</button>
+                        <button type="button" class="btn btn-primary registerBtn">생성</button>
                     </div>
-                </div>
-                <div class="modal-footer">
-                    <button type="button" class="btn btn-secondary registerCloseBtn">취소</button>
-                    <button type="button" class="btn btn-primary registerBtn">생성</button>
                 </div>
             </div>
         </div>
+
+        <!--    //채팅방 정보 모달-->
+        <div class="modal fade roomInfoModal" tabindex="-1" aria-labelledby="roomInfoModalLabel" aria-hidden="true">
+            <div class="modal-dialog modal-dialog-centered">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title" id="roomInfoModalLabel">방 정보</h5>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                    </div>
+                    <div class="modal-body text-center room-info-modal-body">
+                        <div class="chat-avatar"></div>
+                        <h4 class="room-title"></h4>
+                        <p class="room-participants"></p>
+                        <p class="room-description"></p>
+                    </div>
+
+                    <!-- 모달 하단 버튼들 -->
+                    <div class="modal-footer">
+                        <!-- 수정, 삭제, 닫기 버튼 (호스트일 때만 표시) -->
+                        <button type="button" class="btn btn-danger room-delete-btn" style="display: none;">삭제</button>
+                        <button type="button" class="btn btn-warning room-edit-btn" style="display: none;">수정</button>
+
+                        <!-- 나가기, 닫기 버튼 (일반 사용자가 들어갔을 때 표시) -->
+                        <button type="button" class="btn btn-danger room-leave-btn" style="display: none;">방 나가기</button>
+
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">닫기</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
     </div>
+
+
 
     <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
     <script src="/js/matchingRoom.js"></script>
+
 </div>
 
+
 <script layout:fragment="javascript" th:inline="javascript">
-        // 검색 버튼 클릭 이벤트 처리
-        // document.getElementById('searchButton').addEventListener('click', function () {
-        //     document.getElementById('searchForm').submit();
-        // });
+    // 검색 버튼 클릭 이벤트 처리
 
-        // + 버튼 클릭 이벤트 처리
-        const registerModal = new bootstrap.Modal(document.querySelector(".registerModal"));
-        const registerBtn = document.querySelector(".registerBtn");
-        const registerCloseBtn = document.querySelector(".registerCloseBtn");
 
-        const title = document.querySelector(".title");
-        const description = document.querySelector(".description");
-        const maxParticipants = document.querySelector(".maxParticipants");
 
-        document.querySelector('#addButton').addEventListener('click',
-            function (e) {
+
+    // + 버튼 클릭 이벤트 처리
+    const registerModal = new bootstrap.Modal(document.querySelector(".registerModal"));
+    const registerBtn = document.querySelector(".registerBtn");
+    const registerCloseBtn = document.querySelector(".registerCloseBtn");
+
+    const title = document.querySelector(".title");
+    const description = document.querySelector(".description");
+    const maxParticipants = document.querySelector(".maxParticipants");
+
+    document.querySelector('#addButton').addEventListener('click',
+        function (e) {
+            console.log("방 추가 클릭")
             registerModal.show()
         })
 
-        registerCloseBtn.addEventListener("click",
-            function (e) {
+    registerCloseBtn.addEventListener("click",
+        function (e) {
             registerModal.hide()
         })
 
-        registerBtn.addEventListener("click",
-            function (e) {
+    registerBtn.addEventListener("click",
+        function (e) {
             const matchingRoomDTO = {
                 hostId: 1,
                 title: title.value,
@@ -307,8 +355,59 @@
         });
 
 
-        //수정
+    //수정
+    // 방 정보 모달
+    const roomInfoModal = new bootstrap.Modal(document.querySelector(".roomInfoModal"));
 
+    // 채팅 리스트에서 각 방 항목에 이벤트 리스너 추가
+    const chatItems = document.querySelectorAll(".chatInfo");
+
+    chatItems.forEach(chatItem => {
+        chatItem.addEventListener("click", function () {
+            console.log("방 정보 클릭")
+            // 방 정보 가져오기
+            const roomId = this.querySelector("h4:nth-of-type(1)").innerText;
+            const hostId = this.querySelector("h4:nth-of-type(2)").innerText;
+            const roomTitle = this.querySelector("h4:nth-of-type(3)").innerText;
+            const roomParticipants = this.querySelector(".chat-preview span").innerText;
+            const roomDescription = this.querySelector(".chat-preview p").innerText;
+
+            // 모달에 정보 설정
+            document.querySelector(".room-title").innerText = roomTitle;
+            document.querySelector(".room-participants").innerText = roomParticipants;
+            document.querySelector(".room-description").innerText = roomDescription;
+
+            // 유저가 방의 호스트인지 확인
+            if (1 == hostId) {
+                // 호스트일 때 수정, 삭제, 닫기 버튼을 표시
+                document.querySelector(".room-delete-btn").style.display = "inline-block";
+                document.querySelector(".room-edit-btn").style.display = "inline-block";
+                document.querySelector(".room-leave-btn").style.display = "none";
+            } else {
+                // 일반 사용자일 때 나가기, 닫기 버튼을 표시
+                document.querySelector(".room-delete-btn").style.display = "none";
+                document.querySelector(".room-edit-btn").style.display = "none";
+                document.querySelector(".room-leave-btn").style.display = "inline-block";
+            }
+
+            // 모달 표시
+            roomInfoModal.show();
+        });
+    });
+
+    // 채팅방 삭제
+    document.querySelector(".room-delete-btn").addEventListener("click", function () {
+        const roomId = document.querySelector(".room-title").innerText; // 방 ID 가져오기
+        deleteRoom(roomId) // deleteRoom 함수 호출
+            .then(() => {
+                alert("채팅방이 삭제되었습니다.");
+                roomInfoModal.hide(); // 모달 닫기
+                location.reload(); // 페이지 새로 고침 (채팅방 리스트 갱신)
+            })
+            .catch((e) => {
+                alert("채팅방 삭제에 실패했습니다.");
+            });
+    });
 </script>
 
 </body>
