@@ -1,63 +1,50 @@
 package com.busanit501.bootproject.domain;
 
 import jakarta.persistence.*;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
+import lombok.*;
 
-import java.time.LocalDateTime;
-import java.util.List;
-
+import java.time.LocalDate;
 
 @Entity
 @Getter
 @Builder
-@AllArgsConstructor
 @NoArgsConstructor
-@Table(name = "users")
-public class User extends BaseEntity {
+@AllArgsConstructor
+@ToString
+public class User extends BaseEntity{
 
+    @Id
+    @Column(length = 50, nullable = false)
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Long userId; // 사용자 Number
 
-        @Id
-        @GeneratedValue(strategy = GenerationType.IDENTITY)
-        private Long userId; // 사용자 ID
+    @Column(length = 100, nullable = false)
+    private String email; // 사용자 이메일
 
-        @Column(nullable = false, unique = true) // 겹치면 안됨 유니크
-        private String email; // 사용자 이메일 (로그인 아이디로 사용)
+    @Column(length = 50, nullable = false)
+    private String password; // 암호화된 비밀번호
 
-        @Column(nullable = false)
-        private String password; // 암호화된 비밀번호
+    @Column(length = 50, nullable = false)
+    private String name; // 사용자 이름
 
-        @Column(nullable = false)
-        private String name; // 사용자 이름
+    @Column(length = 10, nullable = false)
+    private LocalDate birth; // 사용자 나이 (null 가능)
 
-        private int age; // 사용자 나이
+    @Column(nullable = false)
+    private String gender; // 성별
 
-        @Enumerated(EnumType.STRING)
-        private Gender gender; // 성별 (Male/Female)
+    @Column(length = 200, nullable = false)
+    private String address; // 주소
 
-        private String address; // 주소 (동까지)
+    @Column(nullable = true) // NULL 허용
+    private String profilePicture; // 프로필 사진 URL
 
-        private String profilePicture; // 프로필 사진 URL
+    @Column(length = 100, nullable = false)
+    private String phoneNumber; // 전화번호
 
-        private String phoneNumber; // 전화번호
+    @Column(nullable = false, columnDefinition = "FLOAT DEFAULT 0")
+    private float rating; // 유저의 평균 평점
 
-        @Column(name = "is_verified", columnDefinition = "BOOLEAN DEFAULT FALSE")
-        private boolean isVerified; // 계정 인증 여부
-
-        @Column(nullable = false)
-        private LocalDateTime createdAt; // 계정 생성 시간
-
-        private LocalDateTime updatedAt; // 계정 수정 시간
-
-
-        //-----------------------------
-        @OneToMany(mappedBy = "owner")
-        private List<Pets> pets; // 사용자가 소유한 반려동물 리스트
-
-        @OneToMany(mappedBy = "user")
-        private List<Calendar> schedules; // 사용자가 생성한 일정 리스트
+    @Column(nullable = false, columnDefinition = "INT DEFAULT 0")
+    private int ratingCount; // 리뷰 수
 }
-
-

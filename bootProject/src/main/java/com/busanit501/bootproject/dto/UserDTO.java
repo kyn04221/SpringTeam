@@ -1,30 +1,25 @@
 package com.busanit501.bootproject.dto;
 
-import com.busanit501.bootproject.domain.Gender;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import lombok.*;
 
-import java.time.LocalDateTime;
+        import java.time.LocalDate;
 
-
-
-@Data
-@Builder
-@AllArgsConstructor
+@Getter
+@Setter
 @NoArgsConstructor
+@AllArgsConstructor
+@Builder
 public class UserDTO {
-
-    private Long userId; // 사용자 ID
-    private String email; // 사용자 이메일
-    private String name; // 사용자 이름
-    private int age; // 사용자 나이
-    private Gender gender; // 성별
-    private String address; // 주소
-    private String profilePicture; // 프로필 사진 URL
-    private String phoneNumber; // 전화번호
-    private boolean isVerified; // 계정 인증 여부
-    private LocalDateTime createdAt; // 계정 생성 시간
-    private LocalDateTime updatedAt; // 계정 수정 시간
+    private Long userId;
+    private String email;
+    private String password; // 비밀번호는 일반 텍스트로 저장
+    private String name;
+    private LocalDate birth;
+    private String gender;
+    private String address;
+    private String profilePicture;
+    private String phoneNumber;
+    private float rating;
+    private int ratingCount;
 }
+
