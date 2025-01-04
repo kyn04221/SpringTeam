@@ -44,13 +44,28 @@ address {font-style: normal;}
 
 
 /* 기본 요소 세팅 */
+input {width: 100%; background: #F5F5F5; border: none; height: 50px; padding: 0 20px; border-radius: 8px; font-family: "Noto Sans KR", Arial, Helvetica, sans-serif; font-size: 15px;}
 input::placeholder {color: #C4C5C8;}
-/* ==================== UI */
-input[type="text"], input[type="email"], input[type="password"] {width: 100%; background: #F5F5F5; border: none; height: 50px; padding: 0 20px; border-radius: 8px; font-family: "Noto Sans KR", Arial, Helvetica, sans-serif; font-size: 15px;}
 
-button {width: 100%; height: 50px; font-size: 15px; font-weight: 600; border-radius: 8px; font-family: "Noto Sans KR", Arial, Helvetica, sans-serif;}
-button.btn-dark {background: #000; color: #fff;}
+.form-group {margin: 0 0 30px;}
+.form-group .input-group {display: flex; gap: 10px; margin: 0 0 10px;}
+.form-group .input-group .input {flex: 1;}
+.form-group .input-group .input > label {display: block; font-size: 15px; font-weight: 600; color: #A5A5A5; margin: 0 0 10px;}
+.form-group .input-group .input > div {display: flex; gap: 10px;}
+.form-group .input-group .input > div > input {width: auto; flex: 1;}
+.form-group .input-group .input > div button {width: 100px; color: #fff; background: #000;}
 
+
+
+.form-check {display: flex; width: 100px; background: #F5F5F5; border-radius: 8px;}
+.form-check input[type='radio'] {display: none;}
+.form-check input[type='radio']+label {flex: 1; display: flex; align-items: center; justify-content: center; margin: 0; border-radius: 8px; font-size: 15px; color: #C4C5C8;}
+.form-check input[type='radio']:checked+label {color: #fff; background: #000;}
+
+
+.btn {display: flex; align-items: center; justify-content: center; width: 100%; height: 50px; font-size: 15px; font-weight: 600; border-radius: 8px; font-family: "Noto Sans KR", Arial, Helvetica, sans-serif;}
+.btn.btn-dark {background: #000; color: #fff;}
+.btn.btn-gray {background: #D9D9D9; color: #000;}
 .btn-box {display: flex; align-items: center; justify-content: center; gap: 10px;}
 .btn-box .btn {flex: 1;}
 

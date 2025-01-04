@@ -7,8 +7,6 @@ import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
-import java.time.LocalDateTime;
-
 @Entity
 @Getter
 @Builder
@@ -42,8 +40,4 @@ public class Pets extends BaseEntity {
 
     private String profilePicture; // 반려동물 프로필 사진 URL
 
-    @Column(nullable = false)
-    private LocalDateTime createdAt; // 등록 시간
-
-    private LocalDateTime updatedAt; // 수정 시간
 }

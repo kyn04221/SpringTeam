@@ -4,7 +4,7 @@
 <body>
 <!-- content -->
 <div layout:fragment="content">
-    <div class="login-box">
+    <div class="member-form login-member-form">
         <h2>로그인</h2>
         <p th:text="${message}" class="text-danger"></p>
         <form method="post" th:action="@{/users/login}" id="login-form">
@@ -20,9 +20,18 @@
             <a th:href="@{/users/signup}" class="signupBtn">계정이 없으신가요?</a>
         </form>
         <div class="social-login">
-            <button type="button" class="btn kakao" id="kakaoLogin">카카오로 로그인</button>
-            <button type="button" class="btn naver" id="naverLogin">네이버로 로그인</button>
-            <button type="button" class="btn google" id="googleLogin">구글로 로그인</button>
+            <button type="button" class="btn kakao" id="kakaoLogin">
+                <div class="icon"><img th:src="@{/img/social/kakao_icon.png}"></div>
+                <span>카카오로 로그인</span>
+            </button>
+            <button type="button" class="btn naver" id="naverLogin">
+                <div class="icon"><img th:src="@{/img/social/naver_icon.png}"></div>
+                <span>네이버로 로그인</span>
+            </button>
+            <button type="button" class="btn google" id="googleLogin">
+                <div class="icon"><img th:src="@{/img/social/google_icon.png}"></div>
+                <span>구글로 로그인</span>
+            </button>
         </div>
     </div>
 </div>

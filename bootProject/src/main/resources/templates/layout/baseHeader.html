@@ -34,24 +34,8 @@
                 </ul>
                 <ul class="headMember">
                     <!-- 로그아웃 -->
-                    <li class="headSignup"><a>회원가입</a></li>
-                    <li class="headLogin"><a>로그인</a></li>
-                    <!-- 로그인 -->
-                    <li><a><img th:src="@{/img/message_bold.svg}"><span class="count">6</span></a></li>
-                    <li><a><img th:src="@{/img/bell_bold.svg}"><span class="count">99+</span></a></li>
-                    <li class="headProfile">
-                        <button class="headProfileBtn" onclick="headProfileClick()">
-                            <span>Busanit501</span>님
-                            <span class="icon"><img th:src="@{/img/arrow_down_bold.svg}"></span>
-                        </button>
-                        <div class="profileOption" onmouseleave="headProfileOption()">
-                            <ul>
-                                <li><a>내프로필</a></li>
-                                <li><a>설정</a></li>
-                                <li><a>로그아웃</a></li>
-                            </ul>
-                        </div>
-                    </li>
+                    <li class="headSignup"><a th:href="@{/users/signup}">회원가입</a></li>
+                    <li class="headLogin"><a th:href="@{/users/login}">로그인</a></li>
                 </ul>
             </header>
 

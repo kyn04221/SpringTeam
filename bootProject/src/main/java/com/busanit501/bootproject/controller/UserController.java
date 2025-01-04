@@ -28,11 +28,7 @@ public class UserController {
 
     // 로그인 페이지
     @GetMapping("/login")
-    public String loginForm(Model model) {
-        return "login2"; // login.html로 이동
-    }
-
-    // 로그인 처리
+    public void login() {}
     @PostMapping("/login")
     public String login(@RequestParam String email, @RequestParam String password, RedirectAttributes redirectAttributes) {
         UserDTO user = userService.getUserByEmail(email);
@@ -45,13 +41,10 @@ public class UserController {
         redirectAttributes.addFlashAttribute("message", "이메일 또는 비밀번호가 잘못되었습니다.");
         return "redirect:/users/login"; // 로그인 페이지로 리다이렉션
     }
+
     // 회원가입 페이지
     @GetMapping("/signup")
-    public String signupForm(Model model) {
-        return "user/signup"; // signup.html로 이동
-    }
-
-    // 회원가입 처리
+    public void signup() {}
     @PostMapping("/signup")
     public ResponseEntity<UserDTO> signup(@ModelAttribute UserDTO userDTO) {
         userService.createUser(userDTO);
