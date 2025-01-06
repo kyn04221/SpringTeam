@@ -75,11 +75,6 @@ public class CustomUserDetailsService implements UserDetailsService {
                 member.getMid(),
                 member.getMpw(),
                 member.getEmail(),
-                member.getName(),
-                member.getBirthday(),
-                member.getGender(),
-                member.getPhone(),
-                member.getAddress(),
                 member.isDel(),
                 false,
                 // 권한 지정 해주기.

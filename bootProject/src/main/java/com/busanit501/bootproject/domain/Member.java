@@ -6,7 +6,6 @@ import jakarta.persistence.FetchType;
 import jakarta.persistence.Id;
 import lombok.*;
 
-import java.time.LocalDate;
 import java.util.HashSet;
 import java.util.Set;
 
@@ -16,16 +15,12 @@ import java.util.Set;
 @AllArgsConstructor
 @NoArgsConstructor
 @ToString(exclude = "roleSet") // 회원 각각의 권한, 일반, 관리자
-public class Member extends MemberBaseEntity {
+public class Member extends BaseEntity {
     @Id
     private String mid;
+
     private String mpw;
     private String email;
-    private String name;
-    private Gender gender;
-    private LocalDate birthday;
-    private String phone;
-    private String address;
     private boolean del;
     private boolean social;
 
@@ -57,14 +52,5 @@ public class Member extends MemberBaseEntity {
     public void changeSocial(boolean social) {
         this.social = social;
     }
-
-    public void changeMember(String mpw, String email, String name, Gender gender, LocalDate birthday, String phone, String address) {
-        this.mpw = mpw;
-        this.email = email;
-        this.name = name;
-        this.gender = gender;
-        this.birthday = birthday;
-        this.phone = phone;
-        this.address = address;
-    }
+    // public void changeMember
 }
