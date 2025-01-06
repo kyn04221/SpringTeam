@@ -19,9 +19,36 @@
         <a href="#" id="addEvent">일정 추가</a>
     </div>
 
-    <!-- FullCalendar 관련 스크립트 -->
+
+    <!-- 모달 --------------------------------------- -->
+    <div class="modal fade" id="eventModal" tabindex="-1" role="dialog" aria-labelledby="eventModalLabel"
+         aria-hidden="true">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="eventModalLabel">이벤트 상세 정보</h5>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <div class="modal-body">
+                    <p><strong>제목:</strong> <span id="modalTitle"></span></p>
+                    <p><strong>날짜:</strong> <span id="modalDate"></span></p>
+                    <p><strong>시간:</strong> <span id="modalTime"></span></p>
+                    <p><strong>수정된 날짜:</strong> <span id="modalModDate"></span></p>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-dismiss="modal">닫기</button>
+                </div>
+            </div>
+        </div>
+    </div>
+    <!-- 모달 --------------------------------------- -->
+
+    <!-- FullCalendar -->
     <script src="https://cdn.jsdelivr.net/npm/fullcalendar@6.1.15/index.global.min.js"></script>
 
+    <!-- 이벤트 스크립트 -->
     <script>
         document.addEventListener('DOMContentLoaded', function () {
             var calendarEl = document.getElementById('calendar');
@@ -38,46 +65,39 @@
                 selectable: true,
                 events: [],  // 초기 일정을 빈 배열로 설정
                 // timeZone: 'local',  // 타임존 설정 (예: 로컬 타임존)
-                select: function(info) {
+                select: function (info) {
                     selectedDate = info.startStr; // 선택된 날짜 저장
                     console.log('선택된 날짜:', selectedDate);
+                },
+                eventClick: function (info) {
+                    //틀--------------------------------------
+                    // 새 창으로 일정 상세 보기
+                    // const eventId = info.event.id; // 고유 ID 사용 (필요시 설정)
+                    // openEventDetailPopup(info.event);
+                    //방법1----------------------------------
+                    //                 alert(`
+                    //     제목: ${info.event.title}
+                    //     날짜: ${info.event.start.toLocaleDateString()}
+                    //     시간: ${info.event.extendedProps.time || 'N/A'}
+                    //     수정된 날짜: ${info.event.extendedProps.modDate || 'N/A'}
+                    // );
+                    //--------------------------------------
+                    // 방법2 모달
+                    document.getElementById('modalTitle').innerText = info.event.title;
+                    document.getElementById('modalDate').innerText = info.event.start.toLocaleDateString();
+                    document.getElementById('modalTime').innerText = info.event.extendedProps.time || 'N/A';
+                    document.getElementById('modalModDate').innerText = info.event.extendedProps.modDate || 'N/A';
+
+                    // 모달을 열기
+                    $('#eventModal').modal('show');
                 }
+
             });
             calendar.render();
 
-            // 오른쪽 클릭 메뉴 표시
-            var contextMenu = document.getElementById('contextMenu');
-            calendarEl.addEventListener('contextmenu', function(event) {
-                if (selectedDate) {
-                    event.preventDefault(); // 기본 오른쪽 클릭 메뉴 방지
-                    var x = event.clientX;
-                    var y = event.clientY;
 
-                    contextMenu.style.left = x + 'px';
-                    contextMenu.style.top = y + 'px';
-                    contextMenu.style.display = 'block';
-
-                    // 일정 추가 메뉴 클릭시 처리
-                    document.getElementById('addEvent').onclick = function() {
-                        var eventTitle = prompt('이벤트 제목을 입력하세요:');
-                        if (eventTitle) {
-                            calendar.addEvent({
-                                title: event.schedulename,
-                                start: new Date(event.walkDate), // 문자열을 Date 객체로 변환
-                                allDay: true
-                            });
-                        }
-                        contextMenu.style.display = 'none';  // 메뉴 숨기기
-                    };
-                }
-            });
-
-            // 페이지 어디서든 마우스 우클릭시 메뉴 숨기기
-            document.addEventListener('click', function(e) {
-                contextMenu.style.display = 'none';
-            });
-
-            // 비동기로 서버에서 일정 데이터 가져오기
+            //---------------------------------------------------
+            // 비동기로 서버에서 데이터 가져오기
             fetch('/api/calendar/events')
                 .then(response => response.json())  // JSON 형식으로 변환
                 .then(events => {
@@ -91,16 +111,125 @@
                         //--------------------------------------
                         var eventDate = new Date(event.walkDateIso);  // UTC로 변환된 날짜 사용
                         calendar.addEvent({
-                            title: event.schedulename,
-                            start: eventDate,  // 변환된 로컬 시간
-                            allDay: true
-                            //--------------------------------------
+                            //------------------
+                            // title: event.schedulename,
+                            // start: eventDate,  // 변환된 로컬 시간
+                            // allDay: true
+                            //-------------------
+                            itle: event.schedulename,
+                            start: eventDate, // 변환된 로컬 시간
+                            allDay: true,
+                            extendedProps: {
+                                time: event.walkTime || 'N/A',  // 시간 정보
+                                modDate: event.modDate || 'N/A' // 수정된 날짜 정보
+                            }
                         });
                     });
                 })
                 .catch(error => {
                     console.error('일정 데이터 로딩 실패:', error);
                 });
+            //---------------------------------------------------
+
+
+            // 오른쪽 클릭 메뉴 표시
+            var contextMenu = document.getElementById('contextMenu');
+            calendarEl.addEventListener('contextmenu', function (event) {
+                if (selectedDate) {
+                    event.preventDefault(); // 기본 오른쪽 클릭 메뉴 방지
+                    var x = event.clientX;
+                    var y = event.clientY;
+
+                    contextMenu.style.left = x + 'px';
+                    contextMenu.style.top = y + 'px';
+                    contextMenu.style.display = 'block';
+
+                    // 일정 db에 저장하기
+                    document.getElementById('addEvent').onclick = function () {
+                        var eventTitle = prompt('이벤트 제목을 입력하세요:');
+                        if (eventTitle) {
+                            calendar.addEvent({
+
+                                title: eventTitle,
+                                start: eventDate,
+                                allDay: false,
+                                extendedProps: {
+                                    time: event.walkTime // 서버 데이터에서 가져온 walkTime을 추가
+                                }
+                            });
+
+                            var eventData = {
+                                schedulename: eventTitle,
+                                walkDate: walkDate,
+                                walkTime: walkTime
+                            };
+                            // 서버로 데이터 전송 (fetch API)
+                            fetch('/api/calendar/add', {
+                                method: 'POST',
+                                headers: {
+                                    'Content-Type': 'application/json'
+                                },
+                                body: JSON.stringify(eventData)
+                            })
+                                .then(response => {
+                                    if (response.ok) {
+                                        console.log('일정 추가 성공');
+                                    } else {
+                                        console.error('일정 추가 실패');
+                                    }
+                                })
+                                .catch(error => {
+                                    console.error('서버 요청 실패:', error);
+                                });
+
+
+                        }
+                        contextMenu.style.display = 'none';  // 메뉴 숨기기
+                    };
+
+                    // document.getElementById('addEvent').onclick = function () {
+                    //     var eventTitle = prompt('이벤트 제목을 입력하세요:');
+                    //     if (eventTitle) {
+                    //         var eventData = {
+                    //             title: eventTitle,
+                    //             start: selectedDate,
+                    //             allDay: true
+                    //         };
+                    //
+                    //         // FullCalendar에 추가
+                    //         calendar.addEvent(eventData);
+                    //
+                    //         // 서버로 데이터 전송
+                    //         fetch('/api/calendar/add', {
+                    //             method: 'POST',
+                    //             headers: {
+                    //                 'Content-Type': 'application/json',
+                    //             },
+                    //             body: JSON.stringify(eventData),
+                    //         })
+                    //             .then(response => {
+                    //                 if (response.ok) {
+                    //                     console.log('일정 추가 성공');
+                    //                 } else {
+                    //                     console.error('일정 추가 실패');
+                    //                 }
+                    //             })
+                    //             .catch(error => {
+                    //                 console.error('서버 요청 실패:', error);
+                    //             });
+                    //     }
+                    //     contextMenu.style.display = 'none'; // 메뉴 숨기기
+                    // };
+
+                }
+            });
+
+            // 페이지 어디서든 마우스 우클릭시 메뉴 숨기기
+            document.addEventListener('click', function (e) {
+                contextMenu.style.display = 'none';
+            });
+
+
         });
     </script>
 </div>
