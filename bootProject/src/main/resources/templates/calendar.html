@@ -10,46 +10,42 @@
 
 <div layout:fragment="content">
 
-
+    <!-- 캘린더 -------------------------------->
     <div id="calendar-container" class="container-fluid">
         <div id="calendar"></div>
     </div>
-
+    <!-- 일정 추가 -------------------------------->
     <div id="contextMenu">
         <a href="#" id="addEvent">일정 추가</a>
     </div>
-
-
-    <!-- 모달 --------------------------------------- -->
-    <div class="modal fade" id="eventModal" tabindex="-1" role="dialog" aria-labelledby="eventModalLabel"
-         aria-hidden="true">
-        <div class="modal-dialog" role="document">
-            <div class="modal-content">
-                <div class="modal-header">
-                    <h5 class="modal-title" id="eventModalLabel">이벤트 상세 정보</h5>
-                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                        <span aria-hidden="true">&times;</span>
-                    </button>
-                </div>
-                <div class="modal-body">
-                    <p><strong>제목:</strong> <span id="modalTitle"></span></p>
-                    <p><strong>날짜:</strong> <span id="modalDate"></span></p>
-                    <p><strong>시간:</strong> <span id="modalTime"></span></p>
-                    <p><strong>수정된 날짜:</strong> <span id="modalModDate"></span></p>
-                </div>
-                <div class="modal-footer">
-                    <button type="button" class="btn btn-secondary" data-dismiss="modal">닫기</button>
-                </div>
+    <!-- 모달 -------------------------------->
+    <div id="eventModal" class="custom-modal">
+        <div class="custom-modal-content">
+            <div class="custom-modal-header">
+                <h5>이벤트 상세 정보</h5>
+                <button type="button" id="closeModal" class="close-button">&times;</button>
+            </div>
+            <div class="custom-modal-body">
+                <p><strong>제목:</strong> <span id="modalTitle"></span></p>
+                <p><strong>날짜:</strong> <span id="modalDate"></span></p>
+                <p><strong>시간:</strong> <span id="modalTime"></span></p>
+                <p><strong>수정된 날짜:</strong> <span id="modalModDate"></span></p>
+            </div>
+            <div class="custom-modal-footer">
+                <button type="button" id="closeModalFooter" class="close-button">닫기</button>
             </div>
         </div>
     </div>
-    <!-- 모달 --------------------------------------- -->
+<!-------------------------------------------------->
+
+
 
     <!-- FullCalendar -->
     <script src="https://cdn.jsdelivr.net/npm/fullcalendar@6.1.15/index.global.min.js"></script>
-
-    <!-- 이벤트 스크립트 -->
+   <!-- 이벤트 스크립트 -->
     <script>
+
+
         document.addEventListener('DOMContentLoaded', function () {
             var calendarEl = document.getElementById('calendar');
             var calendar = new FullCalendar.Calendar(calendarEl, {
@@ -67,7 +63,7 @@
                 // timeZone: 'local',  // 타임존 설정 (예: 로컬 타임존)
                 select: function (info) {
                     selectedDate = info.startStr; // 선택된 날짜 저장
-                    console.log('선택된 날짜:', selectedDate);
+                    // console.log('선택된 날짜:', selectedDate);
                 },
                 eventClick: function (info) {
                     //틀--------------------------------------
@@ -81,46 +77,69 @@
                     //     시간: ${info.event.extendedProps.time || 'N/A'}
                     //     수정된 날짜: ${info.event.extendedProps.modDate || 'N/A'}
                     // );
-                    //--------------------------------------
-                    // 방법2 모달
-                    document.getElementById('modalTitle').innerText = info.event.title;
-                    document.getElementById('modalDate').innerText = info.event.start.toLocaleDateString();
-                    document.getElementById('modalTime').innerText = info.event.extendedProps.time || 'N/A';
-                    document.getElementById('modalModDate').innerText = info.event.extendedProps.modDate || 'N/A';
 
-                    // 모달을 열기
-                    $('#eventModal').modal('show');
+                    // 방법2 모달
+                    // 모달로 이벤트를 전달
+                    const eventDetails = {
+                        title: info.event.title,
+                        date: info.event.start.toLocaleDateString(),
+                        time: info.event.extendedProps.time || 'N/A',
+                        modDate: info.event.extendedProps.modDate || 'N/A'
+                    };
+
+                    // 모달에 내용 삽입
+                    document.getElementById('modalTitle').innerText = eventDetails.title;
+                    document.getElementById('modalDate').innerText = eventDetails.date;
+                    document.getElementById('modalTime').innerText = eventDetails.time;
+                    document.getElementById('modalModDate').innerText = eventDetails.modDate;
+
+                    // 모달 띄우기
+                    document.getElementById('eventModal').style.display = 'flex';
                 }
 
             });
             calendar.render();
 
+            // 모달 닫기 버튼 클릭 시 모달 숨기기
+            document.getElementById('closeModal').addEventListener('click', function () {
+                document.getElementById('eventModal').style.display = 'none';
+            });
+
+            document.getElementById('closeModalFooter').addEventListener('click', function () {
+                document.getElementById('eventModal').style.display = 'none';
+            });
+
+            // // 페이지에서 클릭하면 모달 숨기기
+            // document.addEventListener('click', function (e) {
+            //     var modal = document.getElementById('eventModal');
+            //     // 모달 외부를 클릭했을 때만 모달 닫기
+            //     if (!modal.contains(e.target)) {
+            //         modal.style.display = 'none';
+            //     }
+            // });
+            //
+            // // 모달 내부 클릭 시 모달이 닫히지 않도록 이벤트 전파 막기
+            // document.getElementById('eventModal').addEventListener('click', function (e) {
+            //     e.stopPropagation(); // 모달 내부를 클릭하면 이벤트 전파를 막음
+            // });
 
             //---------------------------------------------------
             // 비동기로 서버에서 데이터 가져오기
             fetch('/api/calendar/events')
                 .then(response => response.json())  // JSON 형식으로 변환
                 .then(events => {
+                    console.log(events);
                     events.forEach(event => {
-                        //--------------------------------------
-                        // // 가져온 일정 데이터를 FullCalendar에 추가
-                        // calendar.addEvent({
-                        //     title: event.schedulename,
-                        //     start: event.walkDate, // 이벤트 날짜
-                        //     allDay: true
-                        //--------------------------------------
-                        var eventDate = new Date(event.walkDateIso);  // UTC로 변환된 날짜 사용
+                        var eventDate = new Date(event.walkDateIso);
+                        // const formattedTime = formatTime(event.walkTime);
+                        // UTC로 변환된 날짜 사용
                         calendar.addEvent({
-                            //------------------
-                            // title: event.schedulename,
-                            // start: eventDate,  // 변환된 로컬 시간
-                            // allDay: true
-                            //-------------------
-                            itle: event.schedulename,
+                            title: event.schedulename,
                             start: eventDate, // 변환된 로컬 시간
                             allDay: true,
                             extendedProps: {
                                 time: event.walkTime || 'N/A',  // 시간 정보
+                                // time: formattedTime, // 포맷된 시간
                                 modDate: event.modDate || 'N/A' // 수정된 날짜 정보
                             }
                         });
@@ -149,20 +168,20 @@
                         var eventTitle = prompt('이벤트 제목을 입력하세요:');
                         if (eventTitle) {
                             calendar.addEvent({
-
                                 title: eventTitle,
-                                start: eventDate,
+                                start: selectedDate,
                                 allDay: false,
                                 extendedProps: {
-                                    time: event.walkTime // 서버 데이터에서 가져온 walkTime을 추가
+                                    time: 'N/A', // 시간은 입력받지 않으면 기본값 'N/A'
                                 }
                             });
 
                             var eventData = {
                                 schedulename: eventTitle,
-                                walkDate: walkDate,
-                                walkTime: walkTime
+                                walkDate: selectedDate,
+                                walkTime: 'N/A' // 시간은 기본값 'N/A'
                             };
+
                             // 서버로 데이터 전송 (fetch API)
                             fetch('/api/calendar/add', {
                                 method: 'POST',
@@ -181,45 +200,9 @@
                                 .catch(error => {
                                     console.error('서버 요청 실패:', error);
                                 });
-
-
                         }
                         contextMenu.style.display = 'none';  // 메뉴 숨기기
                     };
-
-                    // document.getElementById('addEvent').onclick = function () {
-                    //     var eventTitle = prompt('이벤트 제목을 입력하세요:');
-                    //     if (eventTitle) {
-                    //         var eventData = {
-                    //             title: eventTitle,
-                    //             start: selectedDate,
-                    //             allDay: true
-                    //         };
-                    //
-                    //         // FullCalendar에 추가
-                    //         calendar.addEvent(eventData);
-                    //
-                    //         // 서버로 데이터 전송
-                    //         fetch('/api/calendar/add', {
-                    //             method: 'POST',
-                    //             headers: {
-                    //                 'Content-Type': 'application/json',
-                    //             },
-                    //             body: JSON.stringify(eventData),
-                    //         })
-                    //             .then(response => {
-                    //                 if (response.ok) {
-                    //                     console.log('일정 추가 성공');
-                    //                 } else {
-                    //                     console.error('일정 추가 실패');
-                    //                 }
-                    //             })
-                    //             .catch(error => {
-                    //                 console.error('서버 요청 실패:', error);
-                    //             });
-                    //     }
-                    //     contextMenu.style.display = 'none'; // 메뉴 숨기기
-                    // };
 
                 }
             });

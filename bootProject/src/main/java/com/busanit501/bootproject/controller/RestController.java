@@ -16,7 +16,7 @@ import java.util.List;
 @RequestMapping("/api")
 @Log4j2
 @RequiredArgsConstructor
-public class CalendarRestController {
+public class RestController {
 
     private final CalendarService calendarService;
 
