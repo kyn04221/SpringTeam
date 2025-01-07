@@ -35,7 +35,7 @@ public class RoomParticipant extends BaseEntity {
     @ManyToOne(fetch = FetchType.LAZY)
     @MapsId("petId") // petId 매핑
     @JoinColumn(name = "pet_id")
-    private Pet pet;
+    private Pets pet;
 
     @CreationTimestamp
     @Column(nullable = false, updatable = false)

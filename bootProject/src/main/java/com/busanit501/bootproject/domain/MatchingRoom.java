@@ -6,8 +6,7 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
-import org.hibernate.annotations.CreationTimestamp;
-import org.hibernate.annotations.UpdateTimestamp;
+
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
@@ -25,11 +24,15 @@ public class MatchingRoom extends BaseEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Integer roomId;
+    private Long roomId;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "host_id", nullable = false)
     private User host;
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "user_id", nullable = false)
+    private User user;
 
     @Column(nullable = false)
     private String title;
@@ -46,32 +49,22 @@ public class MatchingRoom extends BaseEntity {
     @Column(nullable = false)
     private LocalTime meetingTime;
 
-    @Column(nullable = false)
-    private int maxParticipants;
-
-    @Transient
-    private int currentParticipants;
-
-    @CreationTimestamp
-    @Column(nullable = false, updatable = false)
-    private LocalDateTime createdAt;
-
-    @UpdateTimestamp
-    private LocalDateTime updatedAt;
-
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "host_pet_id", nullable = false)
-    private Pets hostPet;
-
-    @OneToMany(mappedBy = "matchingRoom", cascade = CascadeType.ALL, orphanRemoval = true)
-    private List<RoomParticipant> participants = new ArrayList<>();
-
-    public Integer getCurrentParticipants() {
-        return (int) participants.stream()
-                .filter(p -> p.getStatus() == RoomParticipant.ParticipantStatus.Accepted)
-                .count();
-    }
-
+//
+//    @OneToOne(fetch = FetchType.LAZY)
+//    @JoinColumn(name = "calendar_id")
+//    private Calendar calendar;
+//
+//
+//    public User getOtherUser(User currentUser) {
+//        if (host.equals(currentUser)) {
+//            // 현재 사용자가 host인 경우, user 정보를 반환
+//            return user;
+//        } else if (user.equals(currentUser)) {
+//            // 현재 사용자가 user인 경우, host 정보를 반환
+//            return host;
+//        }
+//        return null;  // 매칭룸에 속한 사용자가 아닌 경우
+//    }
 
 
 }
