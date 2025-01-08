@@ -3,6 +3,7 @@ package com.busanit501.bootproject.service;
 
 import com.busanit501.bootproject.domain.MatchingRoom;
 import com.busanit501.bootproject.dto.MatchingRoomDTO;
+import com.busanit501.bootproject.repository.MatchingRoomRepository;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
