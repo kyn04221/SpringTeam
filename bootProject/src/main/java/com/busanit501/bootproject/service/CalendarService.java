@@ -13,6 +13,7 @@ public interface CalendarService {
     void update(CalendarDTO calendarDTO);
     void delete(Long id);
     List<CalendarDTO> getAllCalendars();
+    List<CalendarDTO> getUserCalendars(Long userId);
 
     void updateScheduledEvents();
 

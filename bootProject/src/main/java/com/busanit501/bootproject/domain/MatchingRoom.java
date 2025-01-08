@@ -9,9 +9,8 @@ import lombok.NoArgsConstructor;
 
 
 import java.time.LocalDate;
-import java.time.LocalDateTime;
 import java.time.LocalTime;
-import java.util.ArrayList;
+
 
 @Entity
 @Getter
@@ -54,7 +53,7 @@ public class MatchingRoom extends BaseEntity {
 //    @JoinColumn(name = "calendar_id")
 //    private Calendar calendar;
 //
-//
+
 //    public User getOtherUser(User currentUser) {
 //        if (host.equals(currentUser)) {
 //            // 현재 사용자가 host인 경우, user 정보를 반환

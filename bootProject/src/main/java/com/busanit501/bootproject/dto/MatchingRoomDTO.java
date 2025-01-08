@@ -3,17 +3,23 @@ package com.busanit501.bootproject.dto;
 
 
 import jakarta.validation.constraints.*;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Data;
+import lombok.NoArgsConstructor;
 import org.hibernate.validator.constraints.NotBlank;
 import org.springframework.format.annotation.DateTimeFormat;
 
 import java.time.LocalDate;
 import java.time.LocalTime;
-import java.util.List;
 
 @Data
+@Builder
+@AllArgsConstructor
+@NoArgsConstructor
 public class MatchingRoomDTO {
 
+    private Long roomId;
 
     @NotBlank(message = "제목은 필수 입력 항목입니다.")
     private String title;
@@ -33,14 +39,14 @@ public class MatchingRoomDTO {
     @DateTimeFormat(pattern = "HH:mm")
     private LocalTime meetingTime;
 
-    @NotNull(message = "최대 인원은 필수 입력 항목입니다.")
-    @Min(value = 1, message = "최소 인원은 1명이어야 합니다.")
-    @Max(value = 100, message = "최대 인원은 100명을 초과할 수 없습니다.")
-    private Integer maxParticipants;
+//    @NotNull(message = "최대 인원은 필수 입력 항목입니다.")
+//    @Min(value = 1, message = "최소 인원은 1명이어야 합니다.")
+//    @Max(value = 100, message = "최대 인원은 100명을 초과할 수 없습니다.")
+//    private Integer maxParticipants;
 
-    @NotNull(message = "방장의 반려동물을 선택해주세요.")
-    private Integer hostPetId;
-
-    // 추가 펫 선택을 위한 필드
-    private List<Integer> additionalPetIds;
+//    @NotNull(message = "방장의 반려동물을 선택해주세요.")
+//    private int hostPetId;
+//
+//    // 추가 펫 선택을 위한 필드
+//    private List<Integer> additionalPetIds;
 }

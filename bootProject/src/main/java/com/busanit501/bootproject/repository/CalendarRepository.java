@@ -23,5 +23,7 @@ public interface CalendarRepository extends JpaRepository<Calendar, Long> {
     // @Query를 사용하여 날짜가 오늘 이전이고, 일정 상태가 '예정(SCHEDULED)'인 일정들을 조회
     @Query("SELECT c FROM Calendar c WHERE c.walkDate < :walkDate AND c.status = :status")
     List<Calendar> findByWalkDate(@Param("walkDate") LocalDate walkDate,
-                                                 @Param("status") ScheduleStatus status);
-}
+                                  @Param("status") ScheduleStatus status);
+
+    @Query("SELECT c FROM Calendar c WHERE c.user.id = :userId")
+    List<Calendar> findByUserId(@Param("userId") Long userId);}
