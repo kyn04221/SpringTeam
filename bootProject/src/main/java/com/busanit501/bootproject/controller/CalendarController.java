@@ -23,10 +23,12 @@ public class CalendarController {
         private final CalendarService calendarService;
 
         @GetMapping("/calendar")
-        public String calendar(Model model) {
-                List<CalendarDTO> calendars = calendarService.getAllCalendars();
-                model.addAttribute("calendars", calendars);
-                return "calendar";
+        public void calendar(Model model) {
+                List<CalendarDTO> calendarDTO = calendarService.getAllCalendars();
+//                Long userId = 2L;
+//                model.addAttribute("userID", userId);
+                model.addAttribute("dto", calendarDTO);
+//                return "calendar";
         }
 
 

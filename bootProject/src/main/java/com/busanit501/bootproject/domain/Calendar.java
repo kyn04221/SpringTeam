@@ -7,6 +7,8 @@ import lombok.*;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
+import java.util.ArrayList;
+import java.util.List;
 
 @Entity
 @Getter
@@ -24,6 +26,11 @@ public class Calendar extends BaseEntity {
     @JoinColumn(name = "user_id", nullable = false)
     private User user;  // 사용자와의 관계 (외래 키)
 
+//    @OneToMany(mappedBy = "calendar", cascade = CascadeType.ALL, orphanRemoval = true)
+//    private List<MatchingRoom> matchingRooms;
+
+//    @Column(name = "matching_id", nullable = true)
+//    private Long matchingId;
 
     @Column(name = "schedule_name", nullable = false)
     private String schedulename;
@@ -48,13 +55,14 @@ public class Calendar extends BaseEntity {
 //    @Column(name = "updated_at")
 //    private LocalDateTime updatedAt;  // 일정 수정 시간
 
-
-    public void changeCalendar(String schedulename, LocalDate walkDate, LocalTime walkTime) {
-        this.schedulename = schedulename;
-        this.walkDate = walkDate;
-        this.walkTime = walkTime;
-    }
-
+//
+//    public void changeCalendar(String schedulename, String walkPlace, LocalDate walkDate, LocalTime walkTime) {
+//        this.schedulename = schedulename;
+//        this.walkPlace = walkPlace;
+//        this.walkDate = walkDate;
+//        this.walkTime = walkTime;
+//    }
+//
 
     public void changeScheduleStatus(String schedulename, LocalDate walkDate, LocalTime walkTime, ScheduleStatus status) {
         if (status == null) {
@@ -65,6 +73,8 @@ public class Calendar extends BaseEntity {
         this.walkTime = walkTime;
         this.status = status;
     }
+
+
 }
 
 

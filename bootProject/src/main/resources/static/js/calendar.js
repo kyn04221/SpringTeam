@@ -1,63 +1,146 @@
-const apiUrl = '/schedules';
+//(모달) 상세 정보---------------------------
+function displayEventDetails(eventDetails) {
+    const modalTitle = document.getElementById('modalTitle');
+    const modalDate = document.getElementById('modalDate');
+    const modalTime = document.getElementById('modalTime');
+    const modalPlace = document.getElementById('modalPlace');
 
+    modalTitle.innerText = eventDetails.schedulename;  // 일정 제목
+    modalDate.innerText = eventDetails.walkDateIso;    // 일정 날짜
+    modalTime.innerText = eventDetails.walkTime || 'N/A';  // 시간 정보
+    modalPlace.innerText = eventDetails.place || 'N/A';    // 장소 정보
 
-// 일정 전체 목록 조회
-async function getSchedules({ page, size }) {
+    // 모달 띄우기
+    document.getElementById('eventModal').style.display = 'flex';
+}
+
+// 서버에서 이벤트 상세 정보를 비동기로 받아오는 함수
+async function getEventDetails(eventId) {
     try {
-        const response = await axios.get(`${apiUrl}`, { params: { page, size } });
-        return response.data; // 일정 목록 반환
-    } catch (error) {
-        if (error.response) {
-            console.error('서버 응답ㅡ오류:', error.response.data.message || 'Unknown server error');
-        } else if (error.request) {
-            console.error('요청이 전송되었지만 응닶 없음');
-        } else {
-            console.error('기타 에러:', error.message);
+        const response = await fetch(`/schedule/event/${eventId}`); // 이벤트 상세 정보 요청
+
+        if (!response.ok) {
+            throw new Error("일정 상세 정보를 불러오는 데 실패했습니다.");
         }
-        throw error;
+
+        const eventDetails = await response.json();  // 응답을 JSON 형식으로 변환
+
+        // 모달에 일정 정보 표시
+        displayEventDetails(eventDetails);
+    } catch (error) {
+        console.error("Error fetching event details:", error);
     }
 }
 
-// 일정 추가
-async function addSchedule(schedule) {
+//-------------------------------------------------------
+
+
+//달력에 전체 일정 보이게 하기----------------------------------
+// async function allschedule(userId) {
+//     try {
+//         const response = await fetch(`/calendar/${userId}`);
+//         return response.data
+//         // API 응답 상태가 OK인지 확인
+//         if (!response.ok) {
+//             throw new Error("캘린더 데이터를 불러오는 데 실패했습니다.");
+//         }
+//
+//         // JSON 응답을 파싱
+//         const events = await response.json();
+//
+//         // 캘린더 데이터를 HTML에 표시
+//         displayCalendarEvents(events);
+//     } catch (error) {
+//         console.error("Error fetching calendar events:", error);
+//     }
+// }
+
+// async function allschedule(userId) {
+//         const response = await fetch(`/calendar/${userId}`);
+//         return response.data
+// }
+
+async function allschedule(userId) {
     try {
-        const response = await axios.post(`${apiUrl}`, schedule);
-        return response.data; // 추가된 일정 ID 반환
+        const response = await fetch(`/schedule/${userId}`);  // URL에 userId를 포함하여 fetch 요청
+        const data = await response.json();  // 서버 응답을 JSON 형식으로 변환하여 data에 할당
+        console.log('정보확인하기',data);
+        return data;  // data 객체 반환
     } catch (error) {
-        console.error('Failed to add schedule:', error);
-        throw error;
+        console.error('일정 데이터 로딩 실패:', error);
     }
 }
 
-// 일정 조회 (단일 일정)
-async function getScheduleById(scheduleId) {
+// 캘린더 이벤트를 화면에 표시하는 함수
+function displayCalendarEvents(events) {
+    const eventsContainer = document.getElementById("calendar-events");
+
+    // 기존의 이벤트 목록을 비우고 새로운 이벤트를 추가
+    eventsContainer.innerHTML = '';
+
+    events.forEach(event => {
+        const eventElement = document.createElement("div");
+        eventElement.classList.add("event");
+
+        const eventTitle = document.createElement("h3");
+        eventTitle.textContent = event.schedulename; // 일정 이름
+        eventElement.appendChild(eventTitle);
+
+        const eventDate = document.createElement("p");
+        eventDate.textContent = `날짜: ${event.walkDateIso}`; // ISO 포맷 날짜
+        eventElement.appendChild(eventDate);
+
+        const eventPlace = document.createElement("p");
+        eventPlace.textContent = `장소: ${event.walkPlace || "N/A"}`; // 장소 (없으면 N/A)
+        eventElement.appendChild(eventPlace);
+
+        // 캘린더 이벤트를 HTML에 추가
+        eventsContainer.appendChild(eventElement);
+    });
+}
+
+// 특정 매칭룸을 가져오는 함수
+async function fetchMatchingRoom(roomId) {
     try {
-        const response = await axios.get(`\`${apiUrl}\`${scheduleId}`);
-        return response.data; // 일정 데이터 반환
+        const response = await fetch(`/matching-room/${roomId}`);
+
+        if (!response.ok) {
+            throw new Error("매칭룸 정보를 불러오는 데 실패했습니다.");
+        }
+
+        const matchingRoom = await response.json();
+
+        // 매칭룸 정보 출력
+        displayMatchingRoom(matchingRoom);
     } catch (error) {
-        console.error('Failed to fetch schedule:', error);
-        throw error;
+        console.error("Error fetching matching room:", error);
     }
 }
 
-// 일정 수정
-async function updateSchedule(schedule) {
-    try {
-        const response = await axios.put(`\`${apiUrl}\`${schedule.id}`, schedule);
-        return response.data; // 수정된 일정 데이터 반환
-    } catch (error) {
-        console.error('Failed to update schedule:', error);
-        throw error;
-    }
+// 매칭룸 정보를 화면에 표시하는 함수
+function displayMatchingRoom(matchingRoom) {
+    const roomContainer = document.getElementById("matching-room");
+
+    roomContainer.innerHTML = '';
+
+    const roomTitle = document.createElement("h3");
+    roomTitle.textContent = `매칭룸: ${matchingRoom.roomName}`;
+    roomContainer.appendChild(roomTitle);
+
+    const roomDetails = document.createElement("p");
+    roomDetails.textContent = `상태: ${matchingRoom.status}`;
+    roomContainer.appendChild(roomDetails);
+
+    const roomDescription = document.createElement("p");
+    roomDescription.textContent = `설명: ${matchingRoom.description}`;
+    roomContainer.appendChild(roomDescription);
 }
 
-// 일정 삭제
-async function deleteSchedule(scheduleId) {
-    try {
-        const response = await axios.delete(`\`${apiUrl}\`${scheduleId}`);
-        return response.data; // 삭제 성공 여부 반환
-    } catch (error) {
-        console.error('Failed to delete schedule:', error);
-        throw error;
-    }
-}
+// DOMContentLoaded 이벤트가 발생하면 fetchCalendarEvents 함수 호출
+document.addEventListener("DOMContentLoaded", function() {
+    fetchCalendarEvents(); // 캘린더 이벤트 가져오기
+});
+
+// 매칭룸 ID를 입력받아 fetchMatchingRoom을 호출하는 예시
+// 예시: roomId가 1인 매칭룸 정보를 가져오기
+fetchMatchingRoom(1);

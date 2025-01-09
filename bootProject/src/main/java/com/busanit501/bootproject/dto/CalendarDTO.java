@@ -18,13 +18,18 @@ public class CalendarDTO {
 
     private Long scheduleId;  // 일정 ID
     private Long userId;      // 사용자 ID
+    private Long matchingId;
     private String schedulename; // 일정명
     private LocalDate walkDate;  // 산책 날짜
     private LocalTime walkTime;  // 산책 시간
+    private String walkPlace;
     private String status;       // 산책 상태
     private LocalDateTime createdAt;  // 일정 생성 시간
     private LocalDateTime updatedAt;  // 일정 수정 시간
 
 
     private String walkDateIso; // UTC로 변환된 날짜 (ISO 8601 포맷)
+
+
+
 }

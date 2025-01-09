@@ -14,7 +14,6 @@ import org.springframework.stereotype.Service;
 import java.time.LocalDate;
 import java.time.LocalTime;
 import java.util.List;
-import java.util.Optional;
 import java.util.stream.Collectors;
 
 @Service
@@ -24,37 +23,6 @@ import java.util.stream.Collectors;
 public class CalendarServiceImpl implements CalendarService {
 
     private final CalendarRepository calendarrepository;
-
-    @Override
-    public Long register(CalendarDTO calendarDTO) {
-        Calendar calendar = dtoToEntity(calendarDTO);
-        Long id = calendarrepository.save(calendar).getScheduleId();
-        return id;
-    }
-
-    @Override
-    public CalendarDTO readOne(Long scheduleId) {
-        Optional<Calendar> result = calendarrepository.findById(scheduleId);
-        Calendar calendar= result.orElseThrow();
-        CalendarDTO dto = entityToDto(calendar);
-        return dto;
-    }
-
-    @Override
-    public void update(CalendarDTO calendarDTO) {
-
-        Optional<Calendar> result = calendarrepository.findById(calendarDTO.getScheduleId());
-        Calendar calendar = result.orElseThrow();
-        calendar.changeCalendar(calendarDTO.getSchedulename(),
-                calendarDTO.getWalkDate(), calendarDTO.getWalkTime());
-
-        calendarrepository.save(calendar);
-    }
-
-    @Override
-    public void delete(Long scheduleId) {
-        calendarrepository.deleteById(scheduleId);
-    }
 
     @Override
     public List<CalendarDTO> getAllCalendars() {
@@ -67,6 +35,30 @@ public class CalendarServiceImpl implements CalendarService {
         return calendarDTO;
 
     }
+
+
+    @Override
+    public List<CalendarDTO> getUserCalendars(Long userId) {
+        List<Calendar> calendars = calendarrepository.findByUserId(userId);
+        return calendars.stream().map(this::entityToDto).collect(Collectors.toList());
+    }
+
+
+
+    public CalendarDTO getEventDetailByScheduleId(Long scheduleId) {
+        // scheduleId를 기반으로 이벤트 상세 정보를 가져오는 로직
+        Calendar calendar = calendarrepository.findById(scheduleId)
+                .orElseThrow(() -> new RuntimeException("Event not found"));
+
+        // Calendar 객체를 CalendarDTO로 변환하여 반환
+        CalendarDTO calendarDTO = entityToDto(calendar);
+//        calendarDTO.setScheduleId(calendar.getScheduleId());
+//        calendarDTO.setWalkDateIso(calendar.getWalkDate().toInstant().toString());
+
+        return calendarDTO;
+    }
+
+
 
     // 일정 상태를 자동으로 '완료'로 변경하는 스케줄링 메서드
     @Override
@@ -88,9 +80,44 @@ public class CalendarServiceImpl implements CalendarService {
         calendarrepository.saveAll(events); // 변경된 일정을 저장
         log.info("일정 상태 업데이트 완료: " + events.size() + "개의 일정이 완료 상태로 변경되었습니다.");
     }
+}
 
+//-------------------------------------------
+
+
+//    @Override
+//    public Long register(CalendarDTO calendarDTO) {
+//        Calendar calendar = dtoToEntity(calendarDTO);
+//        Long id = calendarrepository.save(calendar).getScheduleId();
+//        return id;
+//    }
 //
+//    @Override
+//    public CalendarDTO readOne(Long scheduleId) {
+//        Optional<Calendar> result = calendarrepository.findById(scheduleId);
+//        Calendar calendar= result.orElseThrow();
+//        CalendarDTO dto = entityToDto(calendar);
+//        return dto;
+//    }
 //
+//    @Override
+//    public void update(CalendarDTO calendarDTO) {
+//
+//        Optional<Calendar> result = calendarrepository.findById(calendarDTO.getScheduleId());
+//        Calendar calendar = result.orElseThrow();
+//        calendar.changeCalendar(calendarDTO.getSchedulename(),
+//                calendarDTO.getWalkDate(), calendarDTO.getWalkTime());
+//
+//        calendarrepository.save(calendar);
+//    }
+//
+//    @Override
+//    public void delete(Long scheduleId) {
+//        calendarrepository.deleteById(scheduleId);
+//    }
+
+
+//-------------------------------------------
 //    @Override
 //    public PageResponseDTO<CalendarDTO> list(PageRequestDTO pageRequestDTO) {
 //        String[] types = pageRequestDTO.getTypes();
@@ -132,4 +159,4 @@ public class CalendarServiceImpl implements CalendarService {
 //                .total((int) result.getTotalElements())
 //                .build();
 //    }
-}
+
