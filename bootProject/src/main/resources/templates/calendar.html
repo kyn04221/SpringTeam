@@ -1,51 +1,48 @@
 <!DOCTYPE html>
 <html lang="ko" xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout" xmlns:th="http://www.thymeleaf.org"
-      layout:decorate="~{layout/base.html}">
+      layout:decorate="~{layout/base.html}" >
 <head>
     <meta charset="UTF-8">
     <title>산책 일정</title>
     <link rel="stylesheet" th:href="@{/css/calendarcss.css}">
 </head>
 <body>
-
 <div layout:fragment="content">
-
     <!-- 캘린더 -------------------------------->
     <div id="calendar-container" class="container-fluid">
         <div id="calendar"></div>
     </div>
-    <!-- 일정 추가 -------------------------------->
-    <div id="contextMenu">
-        <a href="#" id="addEvent">일정 추가</a>
+    <!-- 우클릭 메뉴 -->
+    <div id="contextMenu" class="context-menu">
+        <ul>
+            <li id="addSchedule">추가</li>
+            <li id="deleteSchedule">삭제</li>
+        </ul>
     </div>
-    <!-- 모달 -------------------------------->
-    <div id="eventModal" class="custom-modal">
-        <div class="custom-modal-content">
+    <!-- Modal -->
+    <div id="scheduleModal" class="custom-modal">
+        <div class="custom-modal-content ">
             <div class="custom-modal-header">
-                <h5>이벤트 상세 정보</h5>
+                <h5>일정</h5>
                 <button type="button" id="closeModal" class="close-button">&times;</button>
             </div>
             <div class="custom-modal-body">
-                <p><strong>제목:</strong> <span id="modalTitle"></span></p>
-                <p><strong>장소:</strong> <span id="modalPlace"></span></p>
+                <p><strong>매칭명:</strong> <span id="modalTitle"></span></p>
                 <p><strong>날짜:</strong> <span id="modalDate"></span></p>
                 <p><strong>시간:</strong> <span id="modalTime"></span></p>
+                <p><strong>장소:</strong> <span id="modalPlace"></span></p>
             </div>
             <div class="custom-modal-footer">
                 <button type="button" id="closeModalFooter" class="close-button">닫기</button>
             </div>
         </div>
     </div>
-    <!-------------------------------------------------->
-
-
-
-    <!-- FullCalendar -->
-    <script src="https://cdn.jsdelivr.net/npm/fullcalendar@6.1.15/index.global.min.js"></script>
-    <script>src="/js/calendar.js"</script>
-    <!-- 이벤트 스크립트 -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js"></script>
+    <script src='https://cdn.jsdelivr.net/npm/fullcalendar@6.1.15/index.global.min.js'></script>
+    <script src="/js/schedule.js"></script>
     <script>
-        document.addEventListener('DOMContentLoaded', function () {
+
+        document.addEventListener('DOMContentLoaded', function() {
             var calendarEl = document.getElementById('calendar');
             var calendar = new FullCalendar.Calendar(calendarEl, {
                 initialView: 'dayGridMonth',
@@ -58,284 +55,65 @@
                 businessHours: true,
                 editable: true,
                 selectable: true,
-                events: [],  // 초기 일정을 빈 배열로 설정
-                // timeZone: 'local',  // 타임존 설정 (예: 로컬 타임존)
-                select: function (info) {
-                    selectedDate = info.startStr; // 선택된 날짜 저장
-                    // console.log('선택된 날짜:', selectedDate);
+                // selectMirror: true,
+                // select: function(arg) {
+                //     var title = prompt('Event Title:');
+                //     if (title) {
+                //         calendar.addEvent({
+                //             title: title,
+                //             start: arg.start,
+                //             end: arg.end,
+                //             allDay: arg.allDay
+                //         })
+                //     }
+                //     calendar.unselect()
+                // },
+                events: async function(fetchInfo, successCallback, failureCallback) {
+                    const userId = BigInt(1); // 실제 userId로 교체
+                    const schedules = await getUserSchedules(userId);
+                    successCallback(schedules);
                 },
-                eventClick: function (info) {
-                        const eventId = info.event.id; // 클릭한 이벤트의 ID
-                        getEventDetails(eventId);  // 서버에서 이벤트 상세 정보를 가져옴
-                        // title: info.event.title,
-                        // date: info.event.start.toLocaleDateString(),
-                        // time: info.event.extendedProps.time || 'N/A',
-                        // place: info.event.extendedProps.place || 'N/A'
-                    // };
+                eventClick: function(info) { // info는 eventClick 핸들러에서 제공되는 객체
+                    const eventDetails = {
+                        schedulename: info.event.title,  // 이벤트 제목 (예: 산책 이름)
+                        // walkDate: info.event.extendedProps.day,  // 추가된 날짜 정보
+                        walkDate: info.event.start,  // 추가된 날짜 정보
+                        walkTime: info.event.extendedProps.time,  // 시간 정보
+                        place: info.event.extendedProps.place  // 장소 정보
+                        // matching: info.event.extendedProps.matching // 매칭 상태 추가
+                    };
+                    displayEventDetails(eventDetails);
+                    // displayEventDetails(info.event);// 이벤트 클릭 시 모달 열기
                 }
-
             });
             calendar.render();
 
             // 모달 닫기 버튼 클릭 시 모달 숨기기
             document.getElementById('closeModal').addEventListener('click', function () {
-                document.getElementById('eventModal').style.display = 'none';
+                document.getElementById('scheduleModal').style.display = 'none';
             });
 
             document.getElementById('closeModalFooter').addEventListener('click', function () {
-                document.getElementById('eventModal').style.display = 'none';
-            });
-            //----------------------------------
-            // const userId = 2;  // 예시로 userId 설정
-            // try {
-            //     const data = await allschedule(userId);  // allschedule 함수 호출하여 데이터 가져오기
-            //     if (data) {
-            //         console.log("서버에서 받은 데이터", data);
-            //         data.forEach(event => {
-            //             var eventDate = new Date(event.walkDateIso);  // 이벤트 날짜 변환
-            //             calendar.addEvent({
-            //                 id: event.eventId,  // 이벤트 ID 추가
-            //                 title: event.schedulename,
-            //                 start: eventDate, // 변환된 로컬 시간
-            //                 allDay: true,
-            //                 extendedProps: {
-            //                     time: event.walkTime || 'N/A',  // 시간 정보
-            //                     place: event.place || 'N/A'
-            //                 }
-            //             });
-            //         });
-            //     }
-            // } catch (error) {
-            //     console.error('일정 데이터 로딩 실패:', error);
-            // }
-
-            //-------------------------
-
-
-            // // 페이지에서 클릭하면 모달 숨기기
-            // document.addEventListener('click', function (e) {
-            //     var modal = document.getElementById('eventModal');
-            //     // 모달 외부를 클릭했을 때만 모달 닫기
-            //     if (!modal.contains(e.target)) {
-            //         modal.style.display = 'none';
-            //     }
-            // });
-            //
-            // // 모달 내부 클릭 시 모달이 닫히지 않도록 이벤트 전파 막기
-            // document.getElementById('eventModal').addEventListener('click', function (e) {
-            //     e.stopPropagation(); // 모달 내부를 클릭하면 이벤트 전파를 막음
-            // });
-
-            //---------------------------------------------------
-            비동기로 서버에서 데이터 가져오fetchEventDetails기
-            const userid = 2L
-            console.log("userid확인",userid)
-            allschedule()
-                // .then(response => response.json())  // JSON 형식으로 변환
-                .then(events => {
-                    console.log("서버에서 받은 데이터", events);
-                    events.forEach(event => {
-                        var eventDate = new Date(event.walkDateIso);
-                        calendar.addEvent({
-                            id: event.eventId,  // 이벤트 ID 추가
-                            title: event.schedulename,
-                            start: eventDate, // 변환된 로컬 시간
-                            allDay: true,
-                            extendedProps: {
-                                time: event.walkTime || 'N/A',  // 시간 정보
-                                place: event.place || 'N/A'
-                                // modDate: event.modDate || 'N/A' // 수정된 날짜 정보
-                            }
-
-                            // title: event.schedulename,
-                            // start: eventDate, // 변환된 로컬 시간
-                            // allDay: true,
-                            // extendedProps: {
-                            //     time: event.walkTime || 'N/A',  // 시간 정보
-                            //     place: event.place || 'N/A'
-                            //     // modDate: event.modDate || 'N/A' // 수정된 날짜 정보
-                            //}
-                        });
-                    });
-                })
-                .catch(error => {
-                    console.error('일정 데이터 로딩 실패:', error);
-                });
-            // ---------------------------------------------------
-            // 예시로 userId 설정
-
-
-            // 오른쪽 클릭 메뉴 표시
-            var contextMenu = document.getElementById('contextMenu');
-            calendarEl.addEventListener('contextmenu', function (event) {
-                if (selectedDate) {
-                    event.preventDefault(); // 기본 오른쪽 클릭 메뉴 방지
-                    var x = event.clientX;
-                    var y = event.clientY;
-
-                    contextMenu.style.left = x + 'px';
-                    contextMenu.style.top = y + 'px';
-                    contextMenu.style.display = 'block';
-
-                    // 일정 db에 저장하기
-                    document.getElementById('addEvent').onclick = function () {
-                        var eventTitle = prompt('이벤트 제목을 입력하세요:');
-                        if (eventTitle) {
-                            calendar.addEvent({
-                                title: eventTitle,
-                                start: selectedDate,
-                                allDay: false,
-                                extendedProps: {
-                                    time: 'N/A', // 시간은 입력받지 않으면 기본값 'N/A'
-                                }
-                            });
-
-                            var eventData = {
-                                schedulename: eventTitle,
-                                walkDate: selectedDate,
-                                walkTime: 'N/A' // 시간은 기본값 'N/A'
-                                // walkPlace: eventTitle,
-                            };
-
-                            // 서버로 데이터 전송 (fetch API)
-                            fetch('/api/calendar/add', {
-                                method: 'POST',
-                                headers: {
-                                    'Content-Type': 'application/json'
-                                },
-                                body: JSON.stringify(eventData)
-                            })
-                                .then(response => {
-                                    if (response.ok) {
-                                        console.log('일정 추가 성공');
-                                    } else {
-                                        console.error('일정 추가 실패');
-                                    }
-                                })
-                                .catch(error => {
-                                    console.error('서버 요청 실패:', error);
-                                });
-                        }
-                        contextMenu.style.display = 'none';  // 메뉴 숨기기
-                    };
-
-                }
+                document.getElementById('scheduleModal').style.display = 'none';
             });
 
-            // 페이지 어디서든 마우스 우클릭시 메뉴 숨기기
-            document.addEventListener('click', function (e) {
-                contextMenu.style.display = 'none';
-            });
+
+
 
         });
 
 
 
+    </script>
+
+</div>
 
 
-
-
-<!--    </script>-->
-<!--</div>-->
-<!--</body>-->
-<!--</html>-->
-
-
-<!--<!DOCTYPE html>-->
-<!--<html lang="ko" xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout" xmlns:th="http://www.thymeleaf.org"-->
-<!--      layout:decorate="~{layout/base.html}">-->
-<!--<head>-->
-<!--    <meta charset="UTF-8">-->
-<!--    <title>산책 일정</title>-->
-<!--    <link rel="stylesheet" th:href="@{/css/calendarcss.css}">-->
-<!--</head>-->
-<!--<body>-->
-
-<!--<div layout:fragment="content">-->
-
-<!--    &lt;!&ndash; 캘린더 &#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;&ndash;&gt;-->
-<!--    <div id="calendar-container" class="container-fluid">-->
-<!--        <div id="calendar"></div>-->
-<!--    </div>-->
-<!--    &lt;!&ndash; 일정 추가 &#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;&ndash;&gt;-->
-<!--    <div id="contextMenu">-->
-<!--        <a href="#" id="addEvent">일정 추가</a>-->
-<!--    </div>-->
-<!--    &lt;!&ndash; 모달 &#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;&ndash;&gt;-->
-<!--    <div id="eventModal" class="custom-modal">-->
-<!--        <div class="custom-modal-content">-->
-<!--            <div class="custom-modal-header">-->
-<!--                <h5>이벤트 상세 정보</h5>-->
-<!--                <button type="button" id="closeModal" class="close-button">&times;</button>-->
-<!--            </div>-->
-<!--            <div class="custom-modal-body">-->
-<!--                <p><strong>제목:</strong> <span id="modalTitle"></span></p>-->
-<!--                <p><strong>장소:</strong> <span id="modalPlace"></span></p>-->
-<!--                <p><strong>날짜:</strong> <span id="modalDate"></span></p>-->
-<!--                <p><strong>시간:</strong> <span id="modalTime"></span></p>-->
-<!--            </div>-->
-<!--            <div class="custom-modal-footer">-->
-<!--                <button type="button" id="closeModalFooter" class="close-button">닫기</button>-->
-<!--            </div>-->
-<!--        </div>-->
-<!--    </div>-->
-<!--    &lt;!&ndash;&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;&ndash;&gt;-->
-
-
-
-<!--    &lt;!&ndash; FullCalendar &ndash;&gt;-->
-<!--    <script src="https://cdn.jsdelivr.net/npm/fullcalendar@6.1.15/index.global.min.js"></script>-->
-<!--    <script>src="/js/calendar.js"</script>-->
-<!--    &lt;!&ndash; 이벤트 스크립트 &ndash;&gt;-->
-<!--    <script>-->
-<!--        document.addEventListener('DOMContentLoaded', function () {-->
-<!--            var calendarEl = document.getElementById('calendar');-->
-<!--            var calendar = new FullCalendar.Calendar(calendarEl, {-->
-<!--                initialView: 'dayGridMonth',-->
-<!--                headerToolbar: {-->
-<!--                    left: 'prev,next today',-->
-<!--                    center: 'title',-->
-<!--                    right: 'dayGridMonth,timeGridWeek,timeGridDay,listMonth'-->
-<!--                },-->
-<!--                navLinks: true,-->
-<!--                businessHours: true,-->
-<!--                editable: true,-->
-<!--                selectable: true,-->
-<!--                // events: [],-->
-<!--                events: async function(fetchInfo, successCallback, failureCallback) {-->
-<!--                    // const userId = '현재 로그인된 사용자 ID';  // 예시로 현재 로그인된 사용자 ID를 넣어주세요.-->
-<!--                    const scheduleData = await allschedule(userId);  // 사용자 ID에 맞는 일정 가져오기-->
-
-<!--                    if (scheduleData) {-->
-<!--                        const events = scheduleData.map(event => ({-->
-<!--                            title: event.schedulename,   // 이벤트 제목-->
-<!--                            start: event.walkDate,       // 시작 날짜-->
-<!--                            allDay: true,                // 종일 이벤트 여부-->
-<!--                            extendedProps: {-->
-<!--                                time: event.walkTime    // 추가 속성-->
-<!--                            }-->
-<!--                        }));-->
-<!--                        successCallback(events);  // FullCalendar에 일정 데이터 전달-->
-<!--                    } else {-->
-<!--                        failureCallback("일정 데이터를 가져오지 못했습니다.");-->
-<!--                    }-->
-<!--                },-->
-<!--                select: function (info) {-->
-<!--                    selectedDate = info.startStr;-->
-<!--                },-->
-<!--                eventClick: function (info) {-->
-<!--                    const eventId = info.event.id;-->
-<!--                    getEventDetails(eventId);-->
-
-<!--                }-->
-
-<!--            });-->
-<!--            calendar.render();-->
-
-
-
-<!--        });-->
-<!--    </script>-->
-<!--</div>-->
-<!--</body>-->
-<!--</html>-->
+<!--<script>-->
+<!--    const userId = BigInt(1);-->
+<!--    // 더미 데이터 확인-->
+<!--    console.log(`현재 로그인된 UserID: ${userId}`);-->
+<!--    getUserSchedules(userId).then(schedules => renderCalendar(schedules));-->
+<!--</script>-->
+</body>
+</html>

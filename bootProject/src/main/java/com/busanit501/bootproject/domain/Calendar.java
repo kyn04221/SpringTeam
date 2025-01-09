@@ -3,6 +3,7 @@ package com.busanit501.bootproject.domain;
 
 import jakarta.persistence.*;
 import lombok.*;
+import org.springframework.format.annotation.DateTimeFormat;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
@@ -48,29 +49,18 @@ public class Calendar extends BaseEntity {
     @Column(nullable = false)
     @Builder.Default
     private ScheduleStatus status = ScheduleStatus.SCHEDULED;  // 산책 상태 (예정, 완료, 취소)
-//
-//    @Column(name = "created_at", nullable = false)
-//    private LocalDateTime createdAt;  // 일정 생성 시간
-//
-//    @Column(name = "updated_at")
-//    private LocalDateTime updatedAt;  // 일정 수정 시간
 
-//
-//    public void changeCalendar(String schedulename, String walkPlace, LocalDate walkDate, LocalTime walkTime) {
-//        this.schedulename = schedulename;
-//        this.walkPlace = walkPlace;
-//        this.walkDate = walkDate;
-//        this.walkTime = walkTime;
-//    }
-//
 
-    public void changeScheduleStatus(String schedulename, LocalDate walkDate, LocalTime walkTime, ScheduleStatus status) {
-        if (status == null) {
-            throw new IllegalArgumentException("ScheduleStatus는 null일 수 없습니다.");
-        }
-        this.schedulename = schedulename;
-        this.walkDate = walkDate;
-        this.walkTime = walkTime;
+
+    @Column(name = "matching")
+    private Boolean matching;
+    @Column(name = "schedul_start")
+    private LocalTime schedulStart;
+    @Column(name = "schedul_end")
+    private LocalTime schedulEnd;
+
+    public void changeStatus(ScheduleStatus status) {
+
         this.status = status;
     }
 

@@ -31,13 +31,13 @@ public class MatchingRoom extends BaseEntity {
     @JoinColumn(name = "host_id", nullable = false)
     private User host;
 
-    @ManyToOne
-    @JoinColumn(name = "calendar_id", nullable = true) // Calendar와 연결
-    private Calendar calendar;
-
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "user_id", nullable = false)
     private User user;
+
+    @ManyToOne
+    @JoinColumn(name = "calendar_id", nullable = true) // Calendar와 연결
+    private Calendar calendar;
 
     @Column(nullable = false)
     private String title;

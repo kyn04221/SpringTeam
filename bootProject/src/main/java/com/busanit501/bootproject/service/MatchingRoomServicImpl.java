@@ -32,28 +32,28 @@ public class MatchingRoomServicImpl implements MatchingRoomService {
 
         return matchingRoomDTO;
     }
-
-//매칭룸 >> 캘린더 저장 !!!
-    public MatchingRoom createMatchingRoom(MatchingRoomDTO matchingRoomDTO) {
-        // 매칭 룸 생성
-        MatchingRoom matchingRoom = MatchingRoom.builder()
-                .title(matchingRoomDTO.getTitle())
-                .description(matchingRoomDTO.getDescription())
-                .place(matchingRoomDTO.getPlace())
-                .meetingDate(matchingRoomDTO.getMeetingDate())
-                .meetingTime(matchingRoomDTO.getMeetingTime())// 예시: 상대방 사용자 정보
-                .build();
-
-        // 매칭 룸 저장
-        MatchingRoom savedMatchingRoom = matchingRoomRepository.save(matchingRoom);
-
-        // 매칭 룸 > 캘린더 저장 부분--------------
-        Calendar calendar = savedMatchingRoom.createCalendarFromMatching();
-        calendarRepository.save(calendar); // Calendar 저장
-
-        return savedMatchingRoom;
-    }
-
+//
+////매칭룸 >> 캘린더 저장 !!!
+//    public MatchingRoom createMatchingRoom(MatchingRoomDTO matchingRoomDTO) {
+//        // 매칭 룸 생성
+//        MatchingRoom matchingRoom = MatchingRoom.builder()
+//                .title(matchingRoomDTO.getTitle())
+//                .description(matchingRoomDTO.getDescription())
+//                .place(matchingRoomDTO.getPlace())
+//                .meetingDate(matchingRoomDTO.getMeetingDate())
+//                .meetingTime(matchingRoomDTO.getMeetingTime())// 예시: 상대방 사용자 정보
+//                .build();
+//
+//        // 매칭 룸 저장
+//        MatchingRoom savedMatchingRoom = matchingRoomRepository.save(matchingRoom);
+//
+//        // 매칭 룸 > 캘린더 저장 부분--------------
+//        Calendar calendar = savedMatchingRoom.createCalendarFromMatching();
+//        calendarRepository.save(calendar); // Calendar 저장
+//
+//        return savedMatchingRoom;
+//    }
+//
 
 
 

@@ -41,8 +41,8 @@ public class CalendarRepositoryTest {
     @Test
     public void testAddCalendarEvent() {
 
-        User testUser = userRepository.findById(2L).orElseThrow(() -> new RuntimeException("user 오류"));
-        MatchingRoom matching = matchingRoomRepository.findById(1L).orElseThrow(() -> new RuntimeException("matchingroom 오류"));
+        User testUser = userRepository.findById(1L).orElseThrow(() -> new RuntimeException("user 오류"));
+        MatchingRoom matching = matchingRoomRepository.findById(7L).orElseThrow(() -> new RuntimeException("matchingroom 오류"));
 
         // 일정 추가
         Calendar calendar = calendarRepository.save(
@@ -53,13 +53,14 @@ public class CalendarRepositoryTest {
                         .walkTime(matching.getMeetingTime())
                         .walkPlace(matching.getPlace())
                         .status(ScheduleStatus.SCHEDULED)
+                        .matching(true)
                         .build()
         );
 
         // 일정 저장
         Calendar savedCalendar = calendarRepository.save(calendar);
 
-   }
+    }
 
 
 //    @Test
