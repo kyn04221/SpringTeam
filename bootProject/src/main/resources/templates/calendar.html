@@ -55,19 +55,6 @@
                 businessHours: true,
                 editable: true,
                 selectable: true,
-                // selectMirror: true,
-                // select: function(arg) {
-                //     var title = prompt('Event Title:');
-                //     if (title) {
-                //         calendar.addEvent({
-                //             title: title,
-                //             start: arg.start,
-                //             end: arg.end,
-                //             allDay: arg.allDay
-                //         })
-                //     }
-                //     calendar.unselect()
-                // },
                 events: async function(fetchInfo, successCallback, failureCallback) {
                     const userId = BigInt(1); // 실제 userId로 교체
                     const schedules = await getUserSchedules(userId);
@@ -76,19 +63,15 @@
                 eventClick: function(info) { // info는 eventClick 핸들러에서 제공되는 객체
                     const eventDetails = {
                         schedulename: info.event.title,  // 이벤트 제목 (예: 산책 이름)
-                        // walkDate: info.event.extendedProps.day,  // 추가된 날짜 정보
                         walkDate: info.event.start,  // 추가된 날짜 정보
                         walkTime: info.event.extendedProps.time,  // 시간 정보
                         place: info.event.extendedProps.place  // 장소 정보
-                        // matching: info.event.extendedProps.matching // 매칭 상태 추가
                     };
                     displayEventDetails(eventDetails);
-                    // displayEventDetails(info.event);// 이벤트 클릭 시 모달 열기
                 }
             });
             calendar.render();
 
-            // 모달 닫기 버튼 클릭 시 모달 숨기기
             document.getElementById('closeModal').addEventListener('click', function () {
                 document.getElementById('scheduleModal').style.display = 'none';
             });
@@ -107,13 +90,5 @@
     </script>
 
 </div>
-
-
-<!--<script>-->
-<!--    const userId = BigInt(1);-->
-<!--    // 더미 데이터 확인-->
-<!--    console.log(`현재 로그인된 UserID: ${userId}`);-->
-<!--    getUserSchedules(userId).then(schedules => renderCalendar(schedules));-->
-<!--</script>-->
 </body>
 </html>

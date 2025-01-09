@@ -1,19 +1,13 @@
 package com.busanit501.bootproject.service;
 
-import com.busanit501.bootproject.domain.Calendar;
+
 import com.busanit501.bootproject.domain.MatchingRoom;
-import com.busanit501.bootproject.domain.ScheduleStatus;
-import com.busanit501.bootproject.domain.User;
-import com.busanit501.bootproject.dto.CalendarDTO;
 import com.busanit501.bootproject.dto.MatchingRoomDTO;
-import com.busanit501.bootproject.dto.UserDTO;
+
 
 public interface MatchingRoomService {
 
     MatchingRoomDTO findByRoomId(Long roomId);
-//    MatchingRoom createMatchingRoom(MatchingRoomDTO matchingRoomDTO);
-
-
 
     default MatchingRoom dtoToEntity(MatchingRoomDTO dto) {
         // 박스에서 꺼내서, 디비 타입(Entity) 변경.

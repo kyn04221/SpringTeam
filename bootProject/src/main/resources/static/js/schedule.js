@@ -15,41 +15,6 @@ async function getUserSchedules(userId) {
         }
     }));
 }
-//
-// // 일정 추가 함수
-// async function addSchedule(calendarobj) {
-//     try {
-//         const response = await axios.post('/schedules/add', calendarobj);
-//         return response.data
-//     } catch (error) {
-//         console.error("일정 추가 실패:", error);
-//     }
-// }
-//
-// // 일정 수정 함수
-// async function updateSchedule(scheduleId, calendarDTO) {
-//     try {
-//         const response = await axios.put(`/api/schedules/update/${scheduleId}`, calendarDTO);
-//         alert("일정 수정 완료");
-//     } catch (error) {
-//         console.error("일정 수정 실패:", error);
-//         alert("일정 수정 실패");
-//     }
-// }
-//
-// // 일정 삭제 함수
-// async function deleteSchedule(id) {
-//     try {
-//         const response = await axios.delete(`/api/schedules/delete/${id}`);
-//         alert("일정 삭제 완료");
-//     } catch (error) {
-//         console.error("일정 삭제 실패:", error);
-//         alert("일정 삭제 실패");
-//     }
-// }
-//
-//
-
 
 //(모달) 상세 정보---------------------------
 function displayEventDetails(eventDetails) {

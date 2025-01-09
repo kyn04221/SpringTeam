@@ -58,35 +58,4 @@ public interface CalendarService {
                 .build();
     }
 
-
-
-
-//
-//    default Calendar dtoToEntity(CalendarDTO dto) {
-//        // 박스에서 꺼내서, 디비 타입(Entity) 변경.
-//        Calendar calendar = Calendar.builder()
-//                .scheduleId(dto.getScheduleId())//일정 id
-//                .schedulename(dto.getSchedulename())
-//                .walkDate(dto.getWalkDate()) // 산책 날짜
-//                .walkTime(dto.getWalkTime())//산책 시간
-//                .status(ScheduleStatus.valueOf(dto.getStatus()))// 산책 일정
-//                .build();
-//
-//        return calendar;
-//    }
-//
-//    default CalendarDTO entityToDto(Calendar calendar) {
-//        CalendarDTO calendarDTO = CalendarDTO.builder()
-//                .scheduleId(calendar.getScheduleId())
-//                .schedulename(calendar.getSchedulename())
-//                .walkDate(calendar.getWalkDate())
-//                .walkTime(calendar.getWalkTime())
-//                .status(String.valueOf(calendar.getStatus()))
-////                .createdAt(calendar.getCreatedAt())
-////                .updatedAt(calendar.getUpdatedAt())
-//                .build();
-//
-//        return calendarDTO;
-//    }
-
 }

@@ -43,11 +43,6 @@ public class CalendarDTO {
     @DateTimeFormat(pattern = "yyyy-MM-dd")
     private LocalTime schedulEnd;
 
-    //
-//
-//
     private String walkDateIso; // UTC로 변환된 날짜 (ISO 8601 포맷)
-//
-
 
 }

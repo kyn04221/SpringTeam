@@ -27,12 +27,6 @@ public class Calendar extends BaseEntity {
     @JoinColumn(name = "user_id", nullable = false)
     private User user;  // 사용자와의 관계 (외래 키)
 
-//    @OneToMany(mappedBy = "calendar", cascade = CascadeType.ALL, orphanRemoval = true)
-//    private List<MatchingRoom> matchingRooms;
-
-//    @Column(name = "matching_id", nullable = true)
-//    private Long matchingId;
-
     @Column(name = "schedule_name", nullable = false)
     private String schedulename;
 
