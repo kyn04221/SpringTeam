@@ -23,7 +23,6 @@ public class CalendarController {
         private final CalendarService calendarService;
 
         @GetMapping
-
         public String calender(Model model, UserDTO user) {
                 List<CalendarDTO> schedules = calendarService.getUserSchedules(user.getUserId());
                 model.addAttribute("schedules", schedules);

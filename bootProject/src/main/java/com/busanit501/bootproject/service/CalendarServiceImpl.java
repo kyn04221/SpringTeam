@@ -54,9 +54,10 @@ public class CalendarServiceImpl implements CalendarService {
     }
 
     @Override
-    public void addSchedule(CalendarDTO calendarDTO) {
+    public Calendar addSchedule(CalendarDTO calendarDTO) {
         Calendar calendar = dtoToEntity(calendarDTO);
         calendarRepository.save(calendar);
+        return calendar;
     }
 
     @Override

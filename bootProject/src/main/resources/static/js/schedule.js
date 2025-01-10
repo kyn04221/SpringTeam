@@ -15,7 +15,97 @@ async function getUserSchedules(userId) {
         }
     }));
 }
+// 일정 추가 모달을 표시하는 함수
+function openScheduleModal(startDate, endDate) {
 
+    document.getElementById('scheduleModal').style.display = 'block';
+
+    // 모달에 선택한 날짜 범위 표시
+    document.getElementById('scheduleName').value = '';
+    document.getElementById('schedulePlace').value = '';
+
+    // 폼 제출 시 일정 저장
+    document.getElementById('scheduleForm').onsubmit = function(event) {
+        event.preventDefault();
+
+        // 선택한 날짜, 장소, 이름 가져오기
+        var scheduleName = document.getElementById('scheduleName').value;
+        var schedulePlace = document.getElementById('schedulePlace').value;
+
+        // 서버로 비동기 요청 보내기 (예시로 JSON 포맷으로 요청)
+        addScheduleToServer({
+            scheduleName: scheduleName,
+            schedulePlace: schedulePlace,
+            scheduleStart: startDate,  // 선택한 시작 날짜
+            scheduleEnd: endDate,      // 선택한 끝 날짜
+            matching: false            // 매칭된 일정이 아니므로 false
+        });
+
+        // 모달 닫기
+        document.getElementById('scheduleModal').style.display = 'none';
+    };
+}
+
+// 서버에 일정 추가하는 함수
+function addScheduleToServer(scheduleData) {
+    console.log("서버에 전송될 일정 데이터:", scheduleData);
+    fetch('/schedule/add', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(scheduleData),
+    })
+        .then(response => response.json())
+        .then(data => {
+            console.log("일정 추가 성공:", data);
+            alert("일정이 추가되었습니다!");
+        })
+        .catch(error => {
+            console.error("일정 추가 오류:", error);
+            alert("일정 추가에 실패했습니다.");
+        });
+}
+
+
+
+
+// 우클릭 메뉴 표시
+function showContextMenu(event, date) {
+    // 우클릭 메뉴
+    let contextMenu = document.getElementById('contextMenu');
+    let selectedDate = null;
+
+    // if (event.button == 2) return;
+    event.preventDefault();
+    selectedDate = date;
+    contextMenu.style.top = event.pageY + 'px';
+    contextMenu.style.left = event.pageX + 'px';
+    contextMenu.style.display = 'block';
+}
+
+
+
+// 일정 추가 서버에 요청 (POST)
+async function addScheduleToDB(scheduleData) {
+    try {
+        const response = await fetch('/schedule/add', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify(scheduleData),
+        });
+        if (response.ok) {
+            alert('일정이 추가되었습니다!');
+            calendar.refetchEvents();  // 일정을 갱신
+        } else {
+            alert('일정 추가 실패');
+        }
+    } catch (error) {
+        console.error('일정 추가 오류:', error);
+    }
+}
 //(모달) 상세 정보---------------------------
 function displayEventDetails(eventDetails) {
 

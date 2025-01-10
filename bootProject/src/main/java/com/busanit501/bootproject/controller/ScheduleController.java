@@ -1,5 +1,6 @@
 package com.busanit501.bootproject.controller;
 
+import com.busanit501.bootproject.domain.Calendar;
 import com.busanit501.bootproject.dto.CalendarDTO;
 import com.busanit501.bootproject.service.CalendarService;
 import lombok.RequiredArgsConstructor;
@@ -9,6 +10,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
 import java.time.ZonedDateTime;
@@ -39,5 +41,22 @@ public class ScheduleController {
 
         return ResponseEntity.ok(schedules);
     }
+
+    @PostMapping("/add")
+    public ResponseEntity<String> addSchedule(@RequestBody CalendarDTO calendarDTO) {
+            try {
+                // 서비스에서 일정 추가
+                Calendar calendar = calendarService.addSchedule(calendarDTO);
+
+                // 성공적으로 일정이 추가되었다는 응답
+                return ResponseEntity.ok("일정이 저장 되었습니다");
+            } catch (Exception e) {
+                // 실패 시 에러 메시지 응답
+                return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("일정 추가 실패");
+            }
+
+
+    }
+
 
 }

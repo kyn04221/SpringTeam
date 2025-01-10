@@ -5,7 +5,6 @@ import com.busanit501.bootproject.domain.MatchingRoom;
 import com.busanit501.bootproject.domain.User;
 import com.busanit501.bootproject.dto.CalendarDTO;
 import com.busanit501.bootproject.domain.Calendar;
-import com.busanit501.bootproject.domain.ScheduleStatus;
 import com.busanit501.bootproject.dto.MatchingRoomDTO;
 
 import java.util.List;
@@ -15,7 +14,7 @@ public interface CalendarService {
     List<CalendarDTO> getUserSchedules(Long userId);
     void updateScheduleStatus();
 
-    void addSchedule(CalendarDTO calendarDTO);
+    Calendar addSchedule(CalendarDTO calendarDTO);
     void updateSchedule(Long id, CalendarDTO calendarDTO);
     void deleteSchedule(Long id);
 
