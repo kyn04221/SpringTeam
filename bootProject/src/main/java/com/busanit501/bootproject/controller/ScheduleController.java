@@ -7,14 +7,11 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 
-import java.time.LocalDate;
 import java.time.LocalDateTime;
-import java.time.ZoneId;
-import java.time.ZonedDateTime;
 import java.util.List;
+
 
 @RestController
 @RequestMapping("/schedule")
@@ -42,6 +39,7 @@ public class ScheduleController {
         return ResponseEntity.ok(schedules);
     }
 
+
     @PostMapping("/add")
     public ResponseEntity<String> addSchedule(@RequestBody CalendarDTO calendarDTO) {
             try {
@@ -52,7 +50,7 @@ public class ScheduleController {
                 return ResponseEntity.ok("일정이 저장 되었습니다");
             } catch (Exception e) {
                 // 실패 시 에러 메시지 응답
-                return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("일정 추가 실패");
+                return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("일정 추가 실패!!!!");
             }
 
 

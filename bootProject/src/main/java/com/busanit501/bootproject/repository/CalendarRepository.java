@@ -16,4 +16,7 @@ public interface CalendarRepository extends JpaRepository<Calendar, Long> {
 
     @Query("SELECT c FROM Calendar c WHERE c.user.userId = :userId")
     List<Calendar> findUserId(@Param("userId") Long userId);
+
+
+    
 }

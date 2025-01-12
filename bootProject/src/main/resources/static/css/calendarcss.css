@@ -158,8 +158,119 @@ body {
     font-size: 20px;
     cursor: pointer;
 }
+/*///////////////////*/
 
+ /*모달 배경*/
 
+.custom-add-modal {
+    display: none; /* 기본적으로 숨김 */
+    position: fixed;
+    transform: translate(-50%, -50%);
+    z-index: 1000;
+    /*left: 0;*/
+    /*top: 0;*/
+     top: 50%; /* 세로 중앙 */
+     left: 50%; /* 가로 중앙 */
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.4); /* 반투명 배경 */
+    overflow: hidden;
+}
 
+/*.custom-add-modal {*/
+/*    position: fixed; !* 화면 기준으로 고정 위치 *!*/
+/*    top: 50%; !* 세로 중앙 *!*/
+/*    left: 50%; !* 가로 중앙 *!*/
+/*    transform: translate(-50%, -50%); !* 중앙 정렬 *!*/
+/*    display: none; !* 초기에는 숨김 *!*/
+/*    z-index: 1000; !* 다른 요소 위에 표시 *!*/
+/*    background: white; !* 모달 배경색 *!*/
+/*    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2); !* 그림자 효과 *!*/
+/*    padding: 16px; !* 내부 여백 *!*/
+/*    border-radius: 8px; !* 모서리 둥글게 *!*/
+/*}
+*/
+/* 모달 내용 */
+.custom-addmodal-content {
+    background-color: #fff;
+    margin: 10% auto;
+    padding: 20px;
+    border-radius: 8px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+    width: 90%;
+    max-width: 500px;
+    position: relative;
+}
+input[type="time"] {
+    -webkit-appearance: none;
+    -moz-appearance: none;
+    appearance: none;
+    background-color: #fff; /* 원하는 배경색으로 설정 */
+}
 
+/* 헤더 스타일 */
+.custom-addmodal-header h5 {
+    margin: 0;
+    font-size: 18px;
+}
 
+/* 닫기 버튼 */
+.close-button {
+    background: none;
+    border: none;
+    color: #999;
+    font-size: 20px;
+    cursor: pointer;
+    position: absolute;
+    top: 10px;
+    right: 10px;
+}
+
+.close-button:hover {
+    color: #000;
+}
+
+/* 바디 스타일 */
+.custom-addmodal-body form div {
+    margin-bottom: 15px;
+}
+
+.custom-addmodal-body label {
+    display: block;
+    margin-bottom: 5px;
+    font-size: 14px;
+}
+
+/* 입력 필드 */
+.custom-addmodal-body input {
+    width: 100%;
+    padding: 8px;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    font-size: 14px;
+}
+
+/* 푸터 버튼 */
+.custom-modal-footer {
+    display: flex;
+    justify-content: flex-end;
+    gap: 10px;
+}
+
+.save-button,
+.close-button {
+    padding: 8px 16px;
+    font-size: 14px;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+}
+
+.save-button {
+    background-color: #007bff;
+    color: white;
+}
+
+.save-button:hover {
+    background-color: #0056b3;
+}

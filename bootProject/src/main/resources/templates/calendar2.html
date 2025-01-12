@@ -1,17 +1,6 @@
 <!DOCTYPE html>
 <html lang="ko" xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout" xmlns:th="http://www.thymeleaf.org"
       layout:decorate="~{layout/base.html}" >
-
-
-<link href="https://cdn.jsdelivr.net/npm/@fullcalendar/core/main.css" rel="stylesheet" />
-<link href="https://cdn.jsdelivr.net/npm/@fullcalendar/daygrid/main.css" rel="stylesheet" />
-<link href="https://cdn.jsdelivr.net/npm/@fullcalendar/timegrid/main.css" rel="stylesheet" />
-<script src="https://cdn.jsdelivr.net/npm/@fullcalendar/core/main.js"></script>
-<script src="https://cdn.jsdelivr.net/npm/@fullcalendar/daygrid/main.js"></script>
-<script src="https://cdn.jsdelivr.net/npm/@fullcalendar/timegrid/main.js"></script>
-<script src="https://cdn.jsdelivr.net/npm/moment@2.29.1/moment.min.js"></script>
-
-
 <head>
     <meta charset="UTF-8">
     <title>산책 일정</title>
@@ -24,12 +13,17 @@
         <div id="calendar"></div>
     </div>
     <!-- 우클릭 메뉴 -->
-    <div id="contextMenu" class="context-menu">
-        <ul>
-            <li id="addSchedule">추가</li>
-            <li id="deleteSchedule">삭제</li>
-        </ul>
+    <!--    <div id="contextMenu" class="context-menu" style="display:none;">-->
+    <!--        <ul>-->
+    <!--            <li id="addSchedule">추가</li>-->
+    <!--&lt;!&ndash;            <li id="deleteSchedule">삭제</li>&ndash;&gt;-->
+    <!--        </ul>-->
+    <!--    </div>-->
+    <div id="context-menu" style="display: none;">
+        <button id="add-event">일정 추가</button>
     </div>
+
+
     <!-- Modal -->
     <div id="scheduleModal" class="custom-modal">
         <div class="custom-modal-content ">
@@ -49,26 +43,51 @@
         </div>
     </div>
 
-    <!--    &lt;!&ndash; 일정 추가 모달 &ndash;&gt;-->
-    <!--    <div id="addscheduleModal" style="display: none;">-->
-    <!--        <h3>개인 일정 추가</h3>-->
-    <!--        <form id="scheduleForm">-->
-    <!--            <label for="scheduleName">일정 이름:</label>-->
-    <!--            <input type="text" id="scheduleName" name="scheduleName" required><br>-->
 
-    <!--            <label for="schedulePlace">장소:</label>-->
-    <!--            <input type="text" id="schedulePlace" name="schedulePlace" required><br>-->
 
-    <!--            <input type="submit" value="일정 추가">-->
-    <!--        </form>-->
-    <!--    </div>-->
+    <!-- 일정 추가 모달 -->
+    <!--        <div id="addscheduleModal" style="display: none;">-->
+    <!--            <h3>개인 일정 추가</h3>-->
+    <!--            <form id="scheduleForm">-->
+    <!--                <label for="scheduleName">일정 이름:</label>-->
+    <!--                <input type="text" id="scheduleName" name="scheduleName" required><br>-->
+
+    <!--                <label for="schedulePlace">장소:</label>-->
+    <!--                <input type="text" id="schedulePlace" name="schedulePlace" required><br>-->
+
+    <!--                <input type="submit" value="일정 추가">-->
+    <!--            </form>-->
+    <!--        </div>-->
+    <!-- 모달 -->
+    <div id="eventModal" class="modal" tabindex="-1" role="dialog">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">일정 추가</h5>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <div class="modal-body">
+                    <form id="event-form">
+                        <input type="text" id="schedulename" placeholder="일정 이름" required />
+                        <input type="time" id="schedulStart" required />
+                        <input type="time" id="schedulEnd" required />
+                        <input type="text" id="walkPlace" placeholder="장소" required />
+                        <input type="hidden" id="scheduleDate" />
+                        <button type="submit">저장</button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
 
 
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js"></script>
     <script src='https://cdn.jsdelivr.net/npm/fullcalendar@6.1.15/index.global.min.js'></script>
     <script src="/js/schedule.js"></script>
-
     <script>
+
         document.addEventListener('DOMContentLoaded', function() {
             var calendarEl = document.getElementById('calendar');
             var calendar = new FullCalendar.Calendar(calendarEl, {
@@ -82,22 +101,32 @@
                 businessHours: true,
                 editable: true,
                 selectable: true,
+                selectMirror: true,
                 events: async function(fetchInfo, successCallback, failureCallback) {
                     const userId = BigInt(1); // 실제 userId로 교체
                     const schedules = await getUserSchedules(userId);
                     successCallback(schedules);
                 },
                 // select: function(info) {
-                //     // 날짜를 선택하면 해당 날짜 범위를 로그로 출력
-                //     console.log("선택된 시작 시간:", info.startStr, "선택된 끝 시간:", info.endStr);
-                //
-                //     // 일정 추가 모달 표시
-                //     openScheduleModal(info.startStr, info.endStr);
+                //     // 날짜를 클릭했을 때 우클릭 메뉴를 표시
+                //     showContextMenu(info.jsEvent, info.dateStr);
                 // },
-                // select: function(info) {
-                //     // 선택된 날짜가 calendar에 표시된 날짜라면
-                //     showContextMenu(info.dateStr);
-                // },
+                dayClick: function(date, jsEvent, view) {
+                    // 날짜 클릭 시 우클릭 메뉴 표시
+                    var dateStr = date.format();
+                    $(jsEvent.target).contextmenu(function(event) {
+                        event.preventDefault();
+                        $('#context-menu').css({
+                            left: event.pageX + 'px',
+                            top: event.pageY + 'px',
+                        }).show();
+
+                        // 일정 추가 클릭 시 모달로 이동
+                        $('#add-event').click(function() {
+                            openEventModal(dateStr);
+                        });
+                    });
+                },
                 eventClick: function(info) { // info는 eventClick 핸들러에서 제공되는 객체
                     const eventDetails = {
                         schedulename: info.event.title,  // 이벤트 제목 (예: 산책 이름)
@@ -106,15 +135,25 @@
                         place: info.event.extendedProps.place  // 장소 정보
                     };
                     displayEventDetails(eventDetails);
-                },           // 우클릭 시 일정 추가 모달 호출
-                // eventRender: function(info) {
-                //     $(info.el).contextmenu(function(event) {
-                //         event.preventDefault(); // 기본 우클릭 메뉴 차단
-                //         console.log("우클릭된 일정:", info.event.title);
-                //     });
-                // }
+                }
             });
             calendar.render();
+            // 우클릭 메뉴 클릭 시 처리
+            // document.getElementById('addSchedule').addEventListener('click', function() {
+            //     const selectedDate = calendar.getDate();
+            //     openScheduleModal(selectedDate); // 모달 열기
+            // });
+
+            // 모달 열기
+            function openEventModal(dateStr) {
+                $('#eventModal').modal('show');
+                $('#scheduleDate').val(dateStr);
+            }
+
+            // // 기본 우클릭 메뉴 방지
+            // window.addEventListener('contextmenu', function(event) {
+            //     event.preventDefault();  // 기본 우클릭 메뉴 방지
+            // });
 
             document.getElementById('closeModal').addEventListener('click', function () {
                 document.getElementById('scheduleModal').style.display = 'none';
@@ -124,10 +163,131 @@
                 document.getElementById('scheduleModal').style.display = 'none';
             });
 
+            // // 모달에서 일정 정보 입력 후 서버에 저장
+            // document.getElementById('saveSchedule').addEventListener('click', async function() {
+            //     const scheduleName = document.getElementById('scheduleName').value;
+            //     const walkDate = document.getElementById('walkDate').value;
+            //     const walkTime = document.getElementById('walkTime').value;
+            //     const walkPlace = document.getElementById('walkPlace').value;
+            //
+            //     const scheduleData = {
+            //         schedulename: scheduleName,
+            //         walkDate: walkDate,
+            //         walkTime: walkTime,
+            //         walkPlace: walkPlace,
+            //         matching: false // 기본값 false
+            //     };
+            //
+            //     try {
+            //         const response = await fetch('/schedule/add', {
+            //             method: 'POST',
+            //             headers: {
+            //                 'Content-Type': 'application/json',
+            //             },
+            //             body: JSON.stringify(scheduleData),
+            //         });
+            //
+            //         if (response.ok) {
+            //             alert('일정이 추가되었습니다!');
+            //             calendar.refetchEvents();  // 일정을 갱신
+            //             document.getElementById('scheduleModal').style.display = 'none'; // 모달 닫기
+            //         } else {
+            //             alert('일정 추가 실패');
+            //         }
+            //     } catch (error) {
+            //         console.error('일정 추가 오류:', error);
+            //     }
+            // });
+            $(document).ready(function() {
+                $('#event-form').on('submit', function(event) {
+                    event.preventDefault();
 
+                    const scheduleData = {
+                        schedulename: $('#schedulename').val(),
+                        schedulStart: $('#schedulStart').val(),
+                        schedulEnd: $('#schedulEnd').val(),
+                        walkPlace: $('#walkPlace').val(),
+                        walkDate: $('#scheduleDate').val(),
+                        matching: false // 매칭은 모달에서 받지 않음, 기본적으로 false 설정
+                    };
 
+                    $.ajax({
+                        url: '/calendar/add', // 일정 추가 요청 URL
+                        method: 'POST',
+                        contentType: 'application/json',
+                        data: JSON.stringify(scheduleData),
+                        success: function(response) {
+                            if (response.success) {
+                                alert('일정이 추가되었습니다.');
+                                location.reload(); // 일정 추가 후 페이지 새로고침
+                            }
+                        },
+                        error: function() {
+                            alert('일정 추가에 실패했습니다.');
+                        }
+                    });
+                });
+            });
+            // // 모달 열기
+            // function openScheduleModal(selectedDate) {
+            //     // 선택된 날짜를 모달에 표시
+            //     document.getElementById('selectedDate').textContent = selectedDate.toLocaleDateString();
+            //     document.getElementById('scheduleModal').style.display = 'block';
+            // }
 
+            //
+            // // 메뉴 닫기
+            // window.addEventListener('click', function() {
+            //     contextMenu.style.display = 'none';
+            // });
+
+            // // '추가' 버튼 클릭 시 처리
+            // document.getElementById('addSchedule').addEventListener('click', function() {
+            //     const scheduleName = prompt("일정 이름을 입력하세요");
+            //     if (scheduleName) {
+            //         const scheduleData = {
+            //             schedulename: scheduleName,
+            //             walkDate: selectedDate,
+            //             walkTime: '00:00',  // 기본값으로 시간 설정 (나중에 수정 가능)
+            //             walkPlace: '미정'
+            //         };
+            //         // 서버에 일정 추가 요청
+            //         addScheduleToDB(scheduleData);
+            //     }
+            //     contextMenu.style.display = 'none';
+            // });
+            //
+            //     // '삭제' 버튼 클릭 시 처리
+            //     document.getElementById('deleteSchedule').addEventListener('click', function() {
+            //         if (selectedDate) {
+            //             deleteScheduleFromDB(selectedDate);
+            //         }
+            //         contextMenu.style.display = 'none';
+            //     });
+            //
+            //
+            //
+            //     // 일정 삭제 서버에 요청 (DELETE)
+            //     async function deleteScheduleFromDB(date) {
+            //         try {
+            //             const response = await fetch(`/schedule/delete/${date}`, {
+            //                 method: 'DELETE',
+            //             });
+            //             if (response.ok) {
+            //                 alert('일정이 삭제되었습니다!');
+            //                 calendar.refetchEvents();  // 일정을 갱신
+            //             } else {
+            //                 alert('일정 삭제 실패');
+            //             }
+            //         } catch (error) {
+            //             console.error('일정 삭제 오류:', error);
+            //         }
+            //     }
+            //
         });
+
+
+
     </script>
 
 </div>

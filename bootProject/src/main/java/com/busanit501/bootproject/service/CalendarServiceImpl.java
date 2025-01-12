@@ -36,7 +36,7 @@ public class CalendarServiceImpl implements CalendarService {
 
     @Override
     public void saveMatchingAndCalendar(MatchingRoomDTO matchingRoomDTO) {
-        MatchingRoom matchingRoom = matchinroomdtoToCalender(matchingRoomDTO);
+        MatchingRoom matchingRoom = matchinroomdtoEntity(matchingRoomDTO);
         matchingRoomRepository.save(matchingRoom);
 
         Calendar calendar = Calendar.builder()

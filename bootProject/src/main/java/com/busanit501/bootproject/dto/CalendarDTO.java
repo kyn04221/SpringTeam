@@ -39,9 +39,9 @@ public class CalendarDTO {
     private Boolean matching;
 
     @DateTimeFormat(pattern = "yyyy-MM-dd")
-    private LocalTime schedulStart;
+    private LocalDate schedulStart;
     @DateTimeFormat(pattern = "yyyy-MM-dd")
-    private LocalTime schedulEnd;
+    private LocalDate schedulEnd;
 
     private String walkDateIso; // UTC로 변환된 날짜 (ISO 8601 포맷)
 

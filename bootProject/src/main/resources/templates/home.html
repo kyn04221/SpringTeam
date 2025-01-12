@@ -1,20 +1,160 @@
-<!doctype html>
-<html lang="ko" xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout" xmlns:th="www.thymeleaf.org"
+<!DOCTYPE html>
+<html lang="ko" xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout" xmlns:th="http://www.thymeleaf.org"
       layout:decorate="~{layout/base.html}">
+<head>
+    <meta charset="UTF-8">
+    <title>산책 일정</title>
+    <link rel="stylesheet" th:href="@{/css/calendarcss.css}">
+</head>
 <body>
-<!-- content -->
+
 <div layout:fragment="content">
 
+
+    <div id="calendar-container" class="container-fluid">
+        <div id="calendar"></div>
+    </div>
+
+    <div id="contextMenu">
+        <a href="#" id="addEvent">일정 추가</a>
+    </div>
+
+    <!-- Modal -->
+    <div id="scheduleaddModal" class="custom-add-modal" style="display: none;">
+        <div class="custom-addmodal-content">
+            <div class="custom-addmodal-header">
+                <h5>일정 추가</h5>
+                <button type="button" id="closeModal" class="close-button">&times;</button>
+            </div>
+            <div class="custom-addmodal-body">
+                <form id="scheduleForm">
+                    <div>
+                        <label for="addmodalTitle">일정 제목</label>
+                        <input type="text" id="addmodalTitle" name="schedulename" placeholder="일정 제목을 입력하세요" required>
+                    </div>
+                    <div>
+                        <label for="modalStartDate">시작 날짜</label>
+                        <input type="datetime-local" id="modalStartDate" name="schedulStart" required>
+                    </div>
+                    <div>
+                        <label for="modalEndDate">끝 날짜</label>
+                        <input type="datetime-local" id="modalEndDate" name="schedulEnd" required>
+                    </div>
+                    <div>
+                        <label for="modalTime">시간</label>
+                        <input type="text" id="modalTime" name="walkTime" placeholder="예: 10:00 AM" required>
+                    </div>
+                    <div>
+                        <label for="modalPlace">장소</label>
+                        <input type="text" id="modalPlace" name="walkPlace" placeholder="장소를 입력하세요" required>
+                    </div>
+                </form>
+            </div>
+            <div class="custom-modal-footer">
+                <button type="button" id="closeModalFooter" class="close-button">닫기</button>
+                <button type="button" id="saveEvent" class="save-button">저장</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- FullCalendar 관련 스크립트 -->
+    <script src="https://cdn.jsdelivr.net/npm/fullcalendar@6.1.15/index.global.min.js"></script>
+    <script src="/js/schedule.js"></script>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            var calendarEl = document.getElementById('calendar');
+            var calendar = new FullCalendar.Calendar(calendarEl, {
+                initialView: 'dayGridMonth',
+                headerToolbar: {
+                    left: 'prev,next today',
+                    center: 'title',
+                    right: 'dayGridMonth,timeGridWeek,timeGridDay,listMonth'
+                },
+                navLinks: true,
+                businessHours: true,
+                editable: true,
+                selectable: true,
+                events: async function(fetchInfo, successCallback, failureCallback) {
+                    const userId = BigInt(1); // 실제 userId로 교체
+                    const schedules = await getUserSchedules(userId);
+                    successCallback(schedules);
+                },
+                // 날짜 선택 시 선택된 날짜 저장
+                select: function(info) {
+                    selectedStartDate = info.startStr; // 선택된 시작 날짜 저장
+                    selectedEndDate = info.endStr; // 선택된 끝 날짜 저장
+                    console.log('선택된 시작 날짜:', selectedStartDate);
+                    console.log('선택된 종료 날짜:', selectedEndDate);
+                },
+                eventClick: function(info) { // info는 eventClick 핸들러에서 제공되는 객체
+                    const eventDetails = {
+                        schedulename: info.event.title,  // 이벤트 제목 (예: 산책 이름)
+                        walkDate: info.event.start,  // 추가된 날짜 정보
+                        walkTime: info.event.extendedProps.time,  // 시간 정보
+                        place: info.event.extendedProps.place  // 장소 정보
+                    };
+                    displayEventDetails(eventDetails);
+                }
+
+            });
+            calendar.render();
+            //-----------------------------------
+
+            // '일정 추가' 버튼 클릭 시 모달 열기
+            document.getElementById('addEvent').addEventListener('click', function() {
+                document.getElementById('scheduleaddModal').style.display = 'block'; // 모달 열기
+            });
+
+            document.getElementById('closeModal').addEventListener('click', function () {
+                document.getElementById('scheduleModal').style.display = 'none';
+            });
+
+            document.getElementById('closeModalFooter').addEventListener('click', function () {
+                document.getElementById('scheduleModal').style.display = 'none';
+            });
+            //-------------------------------------
+
+            //-------------------------------------
+            // 오른쪽 클릭 메뉴 표시
+            calendarEl.addEventListener('contextmenu', function(event) {
+                if (selectedStartDate && selectedEndDate) {
+                    event.preventDefault(); // 기본 우클릭 메뉴 방지
+                    var x = event.clientX;
+                    var y = event.clientY;
+
+                    contextMenu.style.left = x + 'px';
+                    contextMenu.style.top = y + 'px';
+                    contextMenu.style.display = 'block';
+
+                    // 일정 추가 메뉴 클릭 시 처리
+                    // document.getElementById('addEvent').onclick = function() {
+                    //     var eventTitle = prompt('이벤트 제목을 입력하세요:');
+                    //     if (eventTitle) {
+                    //         calendar.addEvent({
+                    //             title: eventTitle,
+                    //             start: selectedStartDate, // 선택된 시작 날짜
+                    //             end: selectedEndDate, // 선택된 종료 날짜
+                    //             allDay: true
+                    //         });
+                    //     }
+                    //     contextMenu.style.display = 'none'; // 메뉴 숨기기
+                    // };
+                    // 일정 저장 시 서버에 비동기 요청
+                    document.getElementById('addEvent').addEventListener('click', function() {
+                        addSchedule();
+                    });
+
+                }
+            });
+
+            // 페이지 어디서든 마우스 우클릭시 메뉴 숨기기
+            document.addEventListener('click', function(e) {
+                contextMenu.style.display = 'none';
+            });
+
+        });
+    </script>
 </div>
-<!-- content -->
-
-
-<!-- javascript -->
-<script layout:fragment="javascript" th:inline="javascript">
-
-</script>
-<!-- javascript -->
-
-
 </body>
 </html>

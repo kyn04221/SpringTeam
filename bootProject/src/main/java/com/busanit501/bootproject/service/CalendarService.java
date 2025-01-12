@@ -29,6 +29,9 @@ public interface CalendarService {
                 .walkTime(calendar.getWalkTime())
                 .walkPlace(calendar.getWalkPlace())
                 .status(calendar.getStatus())
+                .matching(calendar.getMatching())
+                .schedulStart(calendar.getSchedulStart())
+                .schedulEnd(calendar.getSchedulEnd())
                 .build();
     }
 
@@ -41,11 +44,14 @@ public interface CalendarService {
                 .walkTime(dto.getWalkTime())
                 .walkPlace(dto.getWalkPlace())
                 .status(dto.getStatus())
+                .matching(dto.getMatching())
+                .schedulStart(dto.getSchedulStart())
+                .schedulEnd(dto.getSchedulEnd())
                 .build();
     }
 
 
-    default MatchingRoom matchinroomdtoToCalender(MatchingRoomDTO dto) {
+    default MatchingRoom matchinroomdtoEntity(MatchingRoomDTO dto) {
         return MatchingRoom.builder()
                 .host(User.builder().userId(dto.getHostId()).build())
                 .user(User.builder().userId(dto.getUserId()).build())
